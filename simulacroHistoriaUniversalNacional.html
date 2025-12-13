@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Cultura General - ESFM</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style type=text/css>@import url("css/style.css");</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación de Cultura General</h1>
+            <p>Preparación para postulantes a la ESFM - Área de Historia Universal y Nacional</p>
+        </div>
+        
+        <div class="content">
+            <!-- Pantalla de inicio -->
+            <div id="start-screen" class="screen active-screen">
+                <div class="start-info">
+                    <h2>Instrucciones de la evaluación</h2>
+                    <p>Esta evaluación consta de 20 preguntas de Historia Universal y Nacional seleccionadas aleatoriamente de un banco de 100 preguntas.</p>
+                    
+                    <ul>
+                        <li>Tendrás <span class="highlight">1 minuto por pregunta</span> para responder.</li>
+                        <li>Debes seleccionar una de las cuatro opciones de respuesta.</li>
+                        <li>Se mostrará retroalimentación inmediata después de seleccionar una respuesta.</li>
+                        <li>Al finalizar las 20 preguntas, verás tu puntuación final.</li>
+                        <li>Esta evaluación está diseñada para preparar postulantes a la ESFM.</li>
+                    </ul>
+                    
+                    <p>¡Buena suerte!</p>
+                </div>
+                <button id="start-btn" class="btn">Iniciar Evaluación</button>
+            </div>
+            
+            <!-- Pantalla de juego -->
+            <div id="game-screen" class="screen">
+                <div class="game-header">
+                    <div class="timer-container">
+                        Tiempo: <span id="timer">01:00</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>Pregunta <span id="current-question">1</span> de 20</span>
+                            <span>Puntaje: <span id="current-score">0</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <button id="end-btn" class="btn btn-secondary">Terminar Prueba</button>
+                </div>
+                
+                <div class="question-container">
+                    <div id="question-text" class="question-text"></div>
+                </div>
+                
+                <div id="options-container" class="options-container"></div>
+                
+                <div id="feedback" class="feedback"></div>
+                
+                <div class="navigation-buttons">
+                    <button id="next-btn" class="btn" disabled>Siguiente Pregunta</button>
+                </div>
+            </div>
+            
+            <!-- Pantalla de resultados -->
+            <div id="results-screen" class="screen">
+                <div class="results-container">
+                    <h2 style="color: #283593; margin-bottom: 30px; font-size: 28px;">Resultados de la Evaluación</h2>
+                    
+                    <div class="score-circle">
+                        <div id="final-score" class="score-value">0</div>
+                        <div class="score-label">Puntos</div>
+                    </div>
+                    
+                    <div class="results-details">
+                        <div class="result-item">
+                            <span class="result-label">Preguntas respondidas:</span>
+                            <span id="total-answered" class="result-value">0/20</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas correctas:</span>
+                            <span id="correct-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas incorrectas:</span>
+                            <span id="incorrect-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Preguntas sin responder:</span>
+                            <span id="unanswered" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Porcentaje de acierto:</span>
+                            <span id="percentage" class="result-value">0%</span>
+                        </div>
+                    </div>
+                    
+                    <button id="restart-btn" class="btn">Reiniciar Evaluación</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Evaluación de preparación para la ESFM - Área de Historia Universal | Nacional</p>
+        </div>
+    </div>
+
+    <script src="j1s2j3s4j5s6/main.js"></script>
+</body>
+</html>
