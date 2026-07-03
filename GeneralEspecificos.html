@@ -1,0 +1,2959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Reglamento General y especifico - ESFM</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #283593, #3949ab);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active-screen {
+            display: block;
+        }
+        
+        #start-screen {
+            text-align: center;
+        }
+        
+        .start-info {
+            margin-bottom: 40px;
+        }
+        
+        .start-info h2 {
+            color: #283593;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .start-info ul {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            list-style-position: inside;
+        }
+        
+        .start-info li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #3949ab, #283593);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        #game-screen {
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .timer-container {
+            background-color: #f5f5f5;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #283593;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #timer {
+            color: #e53935;
+            font-weight: 800;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 30px;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-container {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-text {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #212121;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #3949ab;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.selected {
+            border-color: #3949ab;
+            background-color: #e8eaf6;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+        
+        .option-letter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .feedback {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .feedback.correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 5px solid #4caf50;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 5px solid #f44336;
+            display: block;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #757575, #616161);
+        }
+        
+        #results-screen {
+            text-align: center;
+        }
+        
+        .results-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3949ab, #283593);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-value {
+            font-size: 60px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        
+        .score-label {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .results-details {
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #283593;
+        }
+        
+        .highlight {
+            color: #283593;
+            font-weight: 700;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #757575;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación sobre Reglamento General y Especifico</h1>
+            <p>Preparación para Ascenso de Categoria 2026</p>
+        </div>
+        
+        <div class="content">
+            <!-- Pantalla de inicio -->
+            <div id="start-screen" class="screen active-screen">
+                <div class="start-info">
+                    <h2>Instrucciones de la evaluación</h2>
+                    <p>Esta evaluación consta de 20 preguntas sobre el Reglamento General y Especifico seleccionadas aleatoriamente de un banco de 200 preguntas.</p>
+                    
+                    <ul>
+                        <li>Tendrás <span class="highlight">1 minuto por pregunta</span> para responder.</li>
+                        <li>Debes seleccionar una de las cuatro opciones de respuesta.</li>
+                        <li>Se mostrará retroalimentación inmediata después de seleccionar una respuesta.</li>
+                        <li>Al finalizar las 20 preguntas, verás tu puntuación final.</li>
+                        <li>Esta evaluación está diseñada para preparar al Ascenso de Categoria 2026.</li>
+                    </ul>
+                    
+                    <p>¡Buena suerte!</p>
+                </div>
+                <button id="start-btn" class="btn">Iniciar Evaluación</button>
+            </div>
+            
+            <!-- Pantalla de juego -->
+            <div id="game-screen" class="screen">
+                <div class="game-header">
+                    <div class="timer-container">
+                        Tiempo: <span id="timer">01:00</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>Pregunta <span id="current-question">1</span> de 20</span>
+                            <span>Puntaje: <span id="current-score">0</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <button id="end-btn" class="btn btn-secondary">Terminar Prueba</button>
+                </div>
+                
+                <div class="question-container">
+                    <div id="question-text" class="question-text"></div>
+                </div>
+                
+                <div id="options-container" class="options-container"></div>
+                
+                <div id="feedback" class="feedback"></div>
+                
+                <div class="navigation-buttons">
+                    <button id="next-btn" class="btn" disabled>Siguiente Pregunta</button>
+                </div>
+            </div>
+            
+            <!-- Pantalla de resultados -->
+            <div id="results-screen" class="screen">
+                <div class="results-container">
+                    <h2 style="color: #283593; margin-bottom: 30px; font-size: 28px;">Resultados de la Evaluación</h2>
+                    
+                    <div class="score-circle">
+                        <div id="final-score" class="score-value">0</div>
+                        <div class="score-label">Puntos</div>
+                    </div>
+                    
+                    <div class="results-details">
+                        <div class="result-item">
+                            <span class="result-label">Preguntas respondidas:</span>
+                            <span id="total-answered" class="result-value">0/20</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas correctas:</span>
+                            <span id="correct-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas incorrectas:</span>
+                            <span id="incorrect-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Preguntas sin responder:</span>
+                            <span id="unanswered" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Porcentaje de acierto:</span>
+                            <span id="percentage" class="result-value">0%</span>
+                        </div>
+                    </div>
+                    
+                    <button id="restart-btn" class="btn">Reiniciar Evaluación</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Evaluación Para Ascenso de Categoria | 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Banco de 100 preguntas de Faltas y Sanciones para la ESFM
+        const questionBank = [
+  {
+    "question": "¿Cuál es el objeto y la finalidad primordial de la Ley Nº 348, 'Ley Integral para Garantizar a las Mujeres una Vida Libre de Violencia'?",
+    "options": [
+      "Establecer mecanismos, medidas y políticas integrales de prevención, atención, protección y reparación a las mujeres en situación de violencia, así como la persecución y sanción a los agresores, garantizando una vida digna y el ejercicio pleno de sus derechos para Vivir Bien",
+      "Solo establecer sanciones para los agresores de violencia contra las mujeres",
+      "Crear centros de acogida para mujeres víctimas de violencia",
+      "Promover campañas de sensibilización sobre la violencia de género"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 2 de la Ley Nº 348, el objeto es establecer mecanismos, medidas y políticas integrales de prevención, atención, protección y reparación a las mujeres en situación de violencia, así como la persecución y sanción a los agresores. Su finalidad es garantizar a las mujeres una vida digna y el ejercicio pleno de sus derechos para Vivir Bien."
+  },
+  {
+    "question": "¿Qué establece la Ley Nº 348 respecto a la 'Prioridad Nacional' en la erradicación de la violencia hacia las mujeres?",
+    "options": [
+      "El Estado Plurinacional de Bolivia asume como prioridad la erradicación de la violencia hacia las mujeres, obligando a los Órganos del Estado y entidades públicas a adoptar medidas, políticas y asignar recursos económicos y humanos suficientes con carácter obligatorio",
+      "Es una prioridad secundaria después de otros temas sociales",
+      "Solo se aplica en áreas urbanas del país",
+      "Es una responsabilidad exclusiva de los gobiernos municipales"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 3 de la Ley Nº 348 determina que el Estado Plurinacional de Bolivia asume como prioridad la erradicación de la violencia hacia las mujeres, por ser una de las formas más extremas de discriminación de género. Esto obliga a los Órganos del Estado y entidades públicas a adoptar medidas, políticas y asignar recursos económicos y humanos suficientes con carácter obligatorio para este fin."
+  },
+  {
+    "question": "¿En qué consiste el principio de 'Despatriarcalización' según el marco normativo de la Ley Nº 348?",
+    "options": [
+      "Es la elaboración de políticas públicas desde la identidad plurinacional para visibilizar, denunciar y erradicar el patriarcado mediante la transformación de estructuras, relaciones, tradiciones y comportamientos desiguales de poder, dominio, exclusión y opresión de los hombres hacia las mujeres",
+      "Es la eliminación de toda autoridad masculina en el ámbito educativo",
+      "Es la creación de instituciones exclusivamente para mujeres",
+      "Es la prohibición de cualquier manifestación cultural tradicional"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 4, numeral 12 de la Ley Nº 348, la despatriarcalización es la elaboración de políticas públicas desde la identidad plurinacional para visibilizar, denunciar y erradicar el patriarcado. Esto se logra mediante la transformación de estructuras, relaciones, tradiciones y comportamientos desiguales de poder, dominio, exclusión y opresión de los hombres hacia las mujeres."
+  },
+  {
+    "question": "¿Cómo define la Ley Nº 348 el concepto de 'Violencia' de manera general?",
+    "options": [
+      "Como cualquier acción u omisión, abierta o encubierta, que cause la muerte, sufrimiento o daño físico, sexual o psicológico a una mujer u otra persona, generándole perjuicio en su patrimonio, economía, fuente laboral u otro ámbito, por el solo hecho de ser mujer",
+      "Solo como agresiones físicas contra las mujeres",
+      "Como cualquier conflicto entre personas",
+      "Como actos de discriminación en el ámbito laboral"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 6, numeral 1 de la Ley Nº 348, define la violencia como cualquier acción u omisión, abierta o encubierta, que cause la muerte, sufrimiento o daño físico, sexual o psicológico a una mujer u otra persona, generándole perjuicio en su patrimonio, economía, fuente laboral u otro ámbito, por el solo hecho de ser mujer."
+  },
+  {
+    "question": "¿Qué se entiende por 'Violencia en el Sistema Educativo Plurinacional' y a quiénes abarca?",
+    "options": [
+      "Todo acto de agresión física, psicológica o sexual cometido contra las mujeres en los ámbitos del sistema educativo regular, alternativo, especial y superior",
+      "Solo la violencia entre estudiantes en las escuelas",
+      "La violencia que ocurre fuera de las instituciones educativas",
+      "Exclusivamente la violencia contra docentes mujeres"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 7, numeral 12 de la Ley Nº 348, es todo acto de agresión física, psicológica o sexual cometido contra las mujeres en los ámbitos del sistema educativo regular, alternativo, especial y superior."
+  },
+  {
+    "question": "¿Cuál es la definición de 'Violencia Simbólica y/o Encubierta' y cómo afecta la percepción social de la mujer?",
+    "options": [
+      "Son mensajes, valores, símbolos o iconos que transmiten y consolidan relaciones de dominación, desigualdad y discriminación, naturalizando la subordinación de las mujeres en la sociedad",
+      "Son agresiones físicas disimuladas",
+      "Son actos de violencia que ocurren en privado",
+      "Son amenazas verbales contra las mujeres"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 7, numeral 5 de la Ley Nº 348, explica que son mensajes, valores, símbolos o iconos que transmiten y consolidan relaciones de dominación, desigualdad y discriminación. Su efecto es naturalizar la subordinación de las mujeres en la sociedad."
+  },
+  {
+    "question": "¿Qué caracteriza a la 'Violencia contra los Derechos Reproductivos' según la Ley Nº 348?",
+    "options": [
+      "Es la acción u omisión que impide o vulnera el derecho de las mujeres a la información y atención integral durante el embarazo, parto o lactancia; así como el derecho a decidir libremente el número y espaciamiento de sus hijos o a elegir métodos anticonceptivos seguros",
+      "Es la obligación de las mujeres a tener hijos",
+      "Es la prohibición de usar métodos anticonceptivos",
+      "Es la atención médica obligatoria durante el embarazo"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 7, numeral 8 de la Ley Nº 348, es la acción u omisión que impide o vulnera el derecho de las mujeres a la información y atención integral durante el embarazo, parto o lactancia; así como el derecho a decidir libremente el número y espaciamiento de sus hijos o a elegir métodos anticonceptivos seguros."
+  },
+  {
+    "question": "¿Qué requisito inexcusable establece el Artículo 13 de la Ley Nº 348 para el acceso a cualquier cargo público en Bolivia?",
+    "options": [
+      "No contar con antecedentes de violencia ejercida contra una mujer o cualquier miembro de su familia que tenga sentencia ejecutoriada en calidad de cosa juzgada, certificado por el SIPPASE",
+      "Tener un título universitario en género",
+      "Ser mayor de 30 años",
+      "Pertenecer a una organización de mujeres"
+    ],
+    "correct": 0,
+    "explanation": "Para acceder a un cargo público por elección, designación o contratación, es requisito inexcusable no contar con antecedentes de violencia ejercida contra una mujer o cualquier miembro de su familia que tenga sentencia ejecutoriada en calidad de cosa juzgada, certificado por el SIPPASE."
+  },
+  {
+    "question": "Explique el criterio de 'Prevención Estructural' dentro de las políticas de prevención de la violencia.",
+    "options": [
+      "Comprende medidas integrales para modificar actitudes y prácticas que generan violencia, sustituyéndolas por comportamientos de respeto a través de la sensibilización y educación en la familia, la escuela, el trabajo y otros ámbitos sociales",
+      "Es la construcción de más centros de acogida",
+      "Es el aumento de penas para los agresores",
+      "Es la creación de más fiscalías especializadas"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 17, numeral 1 de la Ley Nº 348, la prevención estructural comprende medidas integrales para modificar actitudes y prácticas que generan violencia, sustituyéndolas por comportamientos de respeto a través de la sensibilización y educación en la familia, la escuela, el trabajo y otros ámbitos sociales."
+  },
+  {
+    "question": "¿Cuál es el rol del Ministerio de Justicia como 'Ente Rector' en el marco de la Ley Nº 348?",
+    "options": [
+      "Es el responsable de la coordinación, articulación y vigilancia de la aplicación efectiva de la Ley, teniendo a su cargo el SIPPASE, coordinando políticas integrales en todos los niveles del Estado y rindiendo un informe anual ante la Asamblea Legislativa Plurinacional",
+      "Solo es responsable de la publicación de la ley",
+      "Es el encargado de juzgar los casos de violencia",
+      "Es el responsable de la atención médica a las víctimas"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 16 de la Ley Nº 348, el Ministerio de Justicia es el responsable de la coordinación, articulación y vigilancia de la aplicación efectiva de la Ley. Tiene a su cargo el SIPPASE, coordina políticas integrales en todos los niveles del Estado y debe rendir un informe anual ante la Asamblea Legislativa Plurinacional sobre los avances de la norma."
+  },
+  {
+    "question": "¿Qué medidas específicas debe adoptar el Ministerio de Educación para prevenir la violencia según la Ley Nº 348?",
+    "options": [
+      "Incorporar estrategias de prevención en las políticas educativas, incluir el enfoque de género y derechos humanos en la currícula de todos los niveles, crear centros de atención psicológica en unidades educativas, garantizar el traspaso inmediato de hijas e hijos de mujeres en situación de violencia, prohibir materiales educativos con contenidos sexistas y formular políticas contra el acoso sexual",
+      "Solo crear centros de atención psicológica",
+      "Únicamente prohibir materiales sexistas",
+      "Exclusivamente garantizar el traspaso de estudiantes"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 19 de la Ley Nº 348, el Ministerio de Educación tiene la obligación de incorporar estrategias de prevención en las políticas educativas, incluir el enfoque de género y derechos humanos en la currícula de todos los niveles (incluyendo formación docente), crear centros de atención psicológica en unidades educativas y garantizar el traspaso inmediato de hijas e hijos de mujeres en situación de violencia. Asimismo, debe prohibir materiales educativos con contenidos sexistas y formular políticas contra el acoso sexual en el sistema educativo."
+  },
+  {
+    "question": "¿Cuáles son las responsabilidades del personal del Sistema de Salud ante casos de violencia detectados?",
+    "options": [
+      "Brindar atención médica y psicológica de emergencia de forma gratuita y obligatoria, extender de oficio un certificado médico a las mujeres que requieran atención, y reportar casos probables o comprobados al SIPPASE dentro de las 48 horas de conocidos los hechos",
+      "Solo atender las lesiones físicas",
+      "Únicamente reportar los casos a la policía",
+      "Exclusivamente derivar a las víctimas a servicios sociales"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 20 de la Ley Nº 348, los servicios de salud deben brindar atención médica y psicológica de emergencia de forma gratuita y obligatoria. El personal médico debe extender de oficio, de forma obligatoria y gratuita, un certificado médico a las mujeres que requieran atención por daño físico o sexual, el cual debe ser derivado para su homologación forense. Además, tienen la obligación de reportar casos probables o comprobados al SIPPASE dentro de las 48 horas de conocidos los hechos."
+  },
+  {
+    "question": "¿Qué protecciones establece la Ley Nº 348 en el ámbito laboral para las mujeres en situación de violencia?",
+    "options": [
+      "Prohíbe el despido injustificado por situación de violencia y garantiza la estabilidad laboral, estableciendo un sistema de flexibilidad y tolerancia en los horarios de trabajo para que las mujeres puedan asistir a actos procesales o recibir tratamiento, sin que se vean afectados sus derechos salariales",
+      "Solo da derecho a licencia sin goce de sueldo",
+      "Únicamente protege contra el despido",
+      "Exclusivamente otorga flexibilidad horaria"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 21 de la Ley Nº 348 prohíbe el despido injustificado por situación de violencia y garantiza la estabilidad laboral. Asimismo, se establece la adopción de un sistema de flexibilidad y tolerancia en los horarios de trabajo para que las mujeres puedan asistir a actos procesales o recibir tratamiento, sin que se vean afectados sus derechos salariales."
+  },
+  {
+    "question": "¿Qué obligaciones tienen los medios de comunicación respecto a la difusión de contenidos sobre violencia hacia las mujeres?",
+    "options": [
+      "Adoptar códigos de ética para evitar contenidos discriminatorios o que justifiquen la violencia, destinar un espacio mínimo gratuito para mensajes de prevención y difundir informaciones de forma objetiva, resguardando la identidad y dignidad de la víctima y sus hijos",
+      "Solo informar sobre los casos de violencia",
+      "Únicamente difundir campañas de prevención",
+      "Exclusivamente evitar contenidos discriminatorios"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 23 de la Ley Nº 348, los medios deben adoptar códigos de ética para evitar contenidos discriminatorios o que justifiquen la violencia. Están obligados a destinar un espacio mínimo gratuito para mensajes de prevención y deben difundir informaciones de forma objetiva, resguardando la identidad y dignidad de la víctima y sus hijos, evitando exposiciones degradantes."
+  },
+  {
+    "question": "¿Cuál es la función y el tiempo límite de permanencia en las Casas de Acogida y Refugio Temporal?",
+    "options": [
+      "Acoger, proteger y brindar atención interdisciplinaria (hospedaje, alimentación, apoyo psicológico y legal) a las mujeres y sus dependientes en riesgo, con una permanencia que no podrá exceder los tres meses, salvo evaluación que justifique prolongación",
+      "Solo proporcionar alojamiento por tiempo indefinido",
+      "Únicamente brindar apoyo psicológico por un mes",
+      "Exclusivamente ofrecer alimentación por dos semanas"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 26 de la Ley Nº 348 señala que estas casas deben acoger, proteger y brindar atención interdisciplinaria (hospedaje, alimentación, apoyo psicológico y legal) a las mujeres y sus dependientes en riesgo. El Artículo 28 establece que la permanencia no podrá exceder los tres meses, salvo que la gravedad del caso o el riesgo persistente justifiquen una prolongación tras evaluación del personal especializado."
+  },
+  {
+    "question": "¿Cuál es el objeto de las medidas de protección y quiénes pueden dictarlas?",
+    "options": [
+      "Buscan interrumpir o impedir hechos de violencia y salvaguardar la vida e integridad de las mujeres, son de aplicación inmediata y deben ser impuestas por la autoridad competente (fiscales o jueces), incluyendo la salida del agresor del domicilio, prohibición de acercamiento y la fijación de asistencia familiar",
+      "Solo se aplican después de un juicio completo",
+      "Únicamente las puede dictar el juez",
+      "Exclusivamente se refieren a la salida del agresor"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 32 de la Ley Nº 348, las medidas de protección buscan interrumpir o impedir hechos de violencia y salvaguardar la vida e integridad de las mujeres. Son de aplicación inmediata y deben ser impuestas por la autoridad competente (fiscales o jueces). Entre estas medidas se incluyen la salida del agresor del domicilio, prohibición de acercamiento y la fijación de asistencia familiar."
+  },
+  {
+    "question": "¿Bajo qué circunstancias se declara la 'Alerta contra la Violencia hacia las Mujeres' y quién la emite?",
+    "options": [
+      "Se declara cuando se registre un alto índice de delitos contra la vida e integridad de las mujeres en un territorio determinado, y la emite el Órgano Ejecutivo (Ente Rector) o las Entidades Territoriales Autónomas, activando recursos y medidas de emergencia",
+      "Solo la puede declarar el Presidente",
+      "Se declara en todo el país simultáneamente",
+      "Únicamente la emiten los municipios"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 37 de la Ley Nº 348 faculta al Órgano Ejecutivo (Ente Rector) o a las Entidades Territoriales Autónomas a declarar alerta cuando se registre un alto índice de delitos contra la vida e integridad de las mujeres en un territorio determinado. Esta declaratoria obliga a activar recursos y medidas de emergencia para afrontar el problema de forma inmediata."
+  },
+  {
+    "question": "¿Qué establece la Ley Nº 348 respecto a la 'Conciliación' en casos de violencia?",
+    "options": [
+      "Prohíbe terminantemente la conciliación en cualquier hecho de violencia que comprometa la vida o integridad sexual de la mujer, y excepcionalmente podrá ser promovida únicamente por la víctima, por una sola vez, no siendo admisible en casos de reincidencia",
+      "Permite la conciliación en todos los casos",
+      "Solo prohíbe la conciliación en casos de feminicidio",
+      "La conciliación es obligatoria antes de cualquier proceso"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 46 de la Ley Nº 348 prohíbe terminantemente la conciliación en cualquier hecho de violencia que comprometa la vida o integridad sexual de la mujer. Excepcionalmente, la conciliación podrá ser promovida únicamente por la víctima, por una sola vez, y no será admisible en casos de reincidencia."
+  },
+  {
+    "question": "¿Cuáles son las funciones principales de los Servicios Legales Integrales Municipales (SLIM)?",
+    "options": [
+      "Brindar protección y defensa psicológica, social y legal gratuita a las mujeres, intervenir de forma inmediata ante denuncias, brindar patrocinio legal hasta la sentencia firme, solicitar medidas de protección y reportar todos los casos al SIPPASE",
+      "Solo ofrecer asesoría legal",
+      "Únicamente brindar apoyo psicológico",
+      "Exclusivamente reportar casos al SIPPASE"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 50 de la Ley Nº 348, los SLIM tienen la responsabilidad de brindar protección y defensa psicológica, social y legal gratuita a las mujeres. Deben intervenir de forma inmediata ante denuncias, brindar patrocinio legal hasta la sentencia firme, solicitar medidas de protección y reportar todos los casos al SIPPASE."
+  },
+  {
+    "question": "¿Qué es la FELCV y cuáles son sus facultades especiales en caso de flagrancia?",
+    "options": [
+      "Es la Fuerza Especial de Lucha Contra la Violencia, organismo especializado de la Policía Boliviana que en casos de flagrancia puede socorrer a las víctimas incluso dentro de un domicilio sin necesidad de mandamiento judicial, con el fin de prestar protección y evitar mayores agresiones",
+      "Es una organización no gubernamental",
+      "Es un tribunal especializado",
+      "Es un servicio de atención médica"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 53 de la Ley Nº 348 crea la Fuerza Especial de Lucha Contra la Violencia (FELCV) como organismo especializado de la Policía Boliviana para auxilio e investigación. En casos de flagrancia, según el Artículo 54, el personal de la FELCV puede socorrer a las víctimas incluso dentro de un domicilio sin necesidad de mandamiento judicial, con el fin de prestar protección y evitar mayores agresiones."
+  },
+  {
+    "question": "¿Cómo define la Ley Nº 348 el delito de 'Feminicidio' y cuál es su sanción?",
+    "options": [
+      "Lo define como la muerte de una mujer bajo circunstancias específicas (como relación de pareja, subordinación, vulnerabilidad o violencia previa), con una sanción de presidio de treinta (30) años sin derecho a indulto",
+      "Lo define como cualquier muerte de una mujer",
+      "La sanción es de 20 años de cárcel",
+      "La sanción es de cadena perpetua"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 84 de la Ley Nº 348, que incorpora el Artículo 252 bis al Código Penal, define el feminicidio como la muerte de una mujer bajo circunstancias específicas (como relación de pareja, subordinación, vulnerabilidad o violencia previa). La sanción establecida es de presidio de treinta (30) años sin derecho a indulto."
+  },
+  {
+    "question": "¿En qué consiste el delito de 'Acoso Sexual' según las modificaciones al Código Penal?",
+    "options": [
+      "Es el hostigamiento o amenaza realizado valiéndose de una posición jerárquica para obligar a otra persona a realizar actos de contenido sexual no consentidos, con una sanción de cuatro a ocho años de cárcel, y si el agresor es servidor público, será destituido y la pena agravada en un tercio",
+      "Es cualquier comentario de índole sexual",
+      "La sanción es de uno a tres años de cárcel",
+      "No se considera un delito grave"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 84 de la Ley Nº 348 (Artículo 312 quater del Código Penal), el acoso sexual es el hostigamiento o amenaza realizado valiéndose de una posición jerárquica para obligar a otra persona a realizar actos de contenido sexual no consentidos. La sanción es de cuatro a ocho años de cárcel, y si el agresor es servidor público, será destituido y la pena agravada en un tercio."
+  },
+  {
+    "question": "¿Qué son las sanciones alternativas y cuándo pueden aplicarse en delitos de violencia?",
+    "options": [
+      "Son sanciones como multa, trabajos comunitarios o detención de fin de semana que se pueden aplicar cuando la pena impuesta no sea mayor a tres años y el autor no sea reincidente, buscando proteger al núcleo familiar y asegurar la reparación del daño sin necesariamente recurrir a la privación total de libertad en casos menores",
+      "Son sanciones que reemplazan a la cárcel en todos los casos",
+      "Solo se aplican a delitos leves",
+      "No están contempladas en la ley"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 76 de la Ley Nº 348 establece que se pueden aplicar sanciones alternativas (como multa, trabajos comunitarios o detención de fin de semana) cuando la pena impuesta no sea mayor a tres años y el autor no sea reincidente. Estas sanciones buscan proteger al núcleo familiar y asegurar la reparación del daño sin necesariamente recurrir a la privación total de libertad en casos menores."
+  },
+  {
+    "question": "¿Qué principios procesales rigen la administración de justicia en casos de violencia según la Ley Nº 348?",
+    "options": [
+      "La gratuidad (exención de pagos en todas las reparticiones públicas), celeridad (cumplimiento estricto de plazos), oralidad y protección (dictado inmediato de medidas para salvaguardar a la mujer)",
+      "Solo la gratuidad y celeridad",
+      "Únicamente la oralidad y protección",
+      "Exclusivamente la celeridad"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 86 de la Ley Nº 348 establece principios como la gratuidad (exención de pagos en todas las reparticiones públicas), celeridad (cumplimiento estricto de plazos), oralidad y protección (dictado inmediato de medidas para salvaguardar a la mujer)."
+  },
+  {
+    "question": "¿Cómo se garantiza el derecho a la 'No Revictimización' durante el proceso judicial?",
+    "options": [
+      "Las autoridades no deben solicitar pruebas o declaraciones que constituyan revictimización, siendo el Ministerio Público el responsable de reunir las pruebas, procurando no someter a la mujer a interrogatorios o peritajes innecesarios, y permitiendo el uso de medios alternativos para declarar sin confrontar al agresor",
+      "Solo se evita la confrontación con el agresor",
+      "Únicamente se limita el número de declaraciones",
+      "Exclusivamente se prohíben los peritajes"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo a los Artículos 86 y 94 de la Ley Nº 348, las autoridades no deben solicitar pruebas o declaraciones que constituyan revictimización. El Ministerio Público es el responsable de reunir las pruebas, procurando no someter a la mujer a interrogatorios o peritajes innecesarios, y permitiendo el uso de medios alternativos para declarar sin confrontar al agresor."
+  },
+  {
+    "question": "¿Qué documentos se admiten como prueba documental legítima en un proceso por violencia?",
+    "options": [
+      "Certificados médicos homologados, informes psicológicos o sociales de instituciones públicas o privadas reconocidas, documentos de propiedad, cartas, mensajes de texto y correos electrónicos obtenidos lícitamente",
+      "Solo certificados médicos",
+      "Únicamente mensajes de texto",
+      "Exclusivamente documentos de propiedad"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 95 de la Ley Nº 348, se admiten certificados médicos homologados, informes psicológicos o sociales de instituciones públicas o privadas reconocidas, documentos de propiedad, cartas, mensajes de texto y correos electrónicos obtenidos lícitamente."
+  },
+  {
+    "question": "¿Qué porcentaje del Impuesto Directo a los Hidrocarburos (IDH) deben asignar las Entidades Territoriales para esta Ley?",
+    "options": [
+      "Las Gobernaciones deben usar el 30% del IDH de seguridad ciudadana el primer año para construcción de casas de acogida y el 10% posteriormente para mantenimiento. Los Municipios deben asignar entre el 25% y 30% el primer año para los SLIM y el 10% a partir del segundo año",
+      "Todas las entidades deben asignar el mismo porcentaje",
+      "Solo los municipios deben asignar recursos",
+      "No se asigna un porcentaje específico"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 13 del D.S. Nº 2145 (Reglamento) dispone que las Gobernaciones deben usar el 30% del IDH de seguridad ciudadana el primer año para construcción de casas de acogida y el 10% posteriormente para mantenimiento. Los Municipios deben asignar entre el 25% y 30% el primer año para los SLIM y el 10% a partir del segundo año."
+  },
+  {
+    "question": "¿Qué conductas constituyen 'Faltas y Contravenciones' de violencia según el Reglamento?",
+    "options": [
+      "La difusión de imágenes estereotipadas (violencia mediática), agresiones verbales, denegación de servicios en salud o educación, y el acoso laboral que no constituya delito, los cuales deben sancionarse en la instancia donde ocurrió el hecho",
+      "Solo las agresiones verbales",
+      "Únicamente la denegación de servicios",
+      "Exclusivamente el acoso laboral"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 3 del D.S. Nº 2145 identifica como faltas administrativas la difusión de imágenes estereotipadas (violencia mediática), agresiones verbales, denegación de servicios en salud o educación, y el acoso laboral que no constituya delito, los cuales deben sancionarse en la instancia donde ocurrió el hecho."
+  },
+  {
+    "question": "¿Qué facilidades garantiza el Reglamento de la Ley Nº 348 para los hijos de mujeres en situación de violencia en el ámbito escolar?",
+    "options": [
+      "Obliga a las Direcciones Distritales a garantizar el traspaso inmediato de escuela para los hijos o dependientes por riesgo de violencia, a sola presentación del requerimiento fiscal, prohibiendo exigir autorización del padre o realizar cobros por el trámite",
+      "Solo facilita el traspaso con autorización del padre",
+      "Únicamente permite el traspaso después de un proceso judicial",
+      "Exige el pago de aranceles por el trámite"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 15 del D.S. Nº 2145 obliga a las Direcciones Distritales a garantizar el traspaso inmediato de escuela para los hijos o dependientes por riesgo de violencia, a sola presentación del requerimiento fiscal, prohibiendo exigir autorización del padre o realizar cobros por el trámite."
+  },
+  {
+    "question": "¿Cuáles son los requisitos especiales para ser designada o designado como Juez en materia de violencia?",
+    "options": [
+      "Además de los requisitos de ley, se exige especialidad en materia penal y conocimientos en género o derechos humanos, y deben contar con un certificado de aptitud psicotécnica expedido por el Consejo de la Magistratura que asegure su idoneidad para el cargo",
+      "Solo se exige especialidad penal",
+      "Únicamente conocimientos en género",
+      "Exclusivamente el certificado psicotécnico"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 69 de la Ley Nº 348, además de los requisitos de ley, se exige especialidad en materia penal y conocimientos en género o derechos humanos. Asimismo, deben contar con un certificado de aptitud psicotécnica expedido por el Consejo de la Magistratura que asegure su idoneidad para el cargo."
+  },
+  {
+    "question": "¿Cuál es el objeto primordial de la Ley Nº 1178 de Administración y Control Gubernamentales?",
+    "options": [
+      "Regular los sistemas de administración y de control de los recursos del Estado y su relación con los sistemas nacionales de Planificación e Inversión Pública, con el fin de programar, organizar, ejecutar y controlar el uso eficaz y eficiente de los recursos públicos, disponer de información útil y confiable, y lograr que todo servidor público asuma plena responsabilidad por sus actos",
+      "Solo controlar el uso de recursos públicos",
+      "Únicamente establecer sistemas de administración",
+      "Exclusivamente regular la inversión pública"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 1 de la Ley Nº 1178, el objeto es regular los sistemas de administración y de control de los recursos del Estado y su relación con los sistemas nacionales de Planificación e Inversión Pública, con el fin de programar, organizar, ejecutar y controlar el uso eficaz y eficiente de los recursos públicos, disponer de información útil y confiable, y lograr que todo servidor público asuma plena responsabilidad por sus actos."
+  },
+  {
+    "question": "¿Cuáles son los ocho sistemas que regula la Ley Nº 1178 y cómo se agrupan según sus funciones?",
+    "options": [
+      "Para programar y organizar: Programación de Operaciones, Organización Administrativa y Presupuesto; para ejecutar: Administración de Personal, Administración de Bienes y Servicios, Tesorería y Crédito Público y Contabilidad Integrada; para controlar: Control Gubernamental",
+      "Solo existen tres sistemas principales",
+      "Se agrupan en sistemas de planificación, ejecución y evaluación",
+      "No existe una agrupación específica"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 2 de la Ley Nº 1178, los sistemas son: a) Para programar y organizar: Programación de Operaciones, Organización Administrativa y Presupuesto; b) Para ejecutar las actividades: Administración de Personal, Administración de Bienes y Servicios, Tesorería y Crédito Público y Contabilidad Integrada; c) Para controlar: Control Gubernamental (Control Interno y Control Externo Posterior)."
+  },
+  {
+    "question": "¿Cuál es el ámbito de aplicación de la Ley Nº 1178 según sus artículos 3 y 4?",
+    "options": [
+      "Se aplica a todas las entidades del Sector Público sin excepción (Ministerios, Unidades Administrativas de la Contraloría, Fuerzas Armadas, Policía Nacional, Universidades, Municipalidades, etc.), así como a las unidades administrativas de los Órganos Legislativo y Judicial",
+      "Solo se aplica al Poder Ejecutivo",
+      "Únicamente a las entidades descentralizadas",
+      "Exclusivamente a los gobiernos municipales"
+    ],
+    "correct": 0,
+    "explanation": "La Ley Nº 1178 se aplica a todas las entidades del Sector Público sin excepción (Ministerios, Unidades Administrativas de la Contraloría, Fuerzas Armadas, Policía Nacional, Universidades, Municipalidades, etc.), así como a las unidades administrativas de los Órganos Legislativo y Judicial."
+  },
+  {
+    "question": "¿Cómo define el Artículo 6 de la Ley Nº 1178 al Sistema de Programación de Operaciones (SPO)?",
+    "options": [
+      "Es el sistema que traduce los objetivos y planes estratégicos de cada entidad en resultados concretos a alcanzar en el corto y mediano plazo, definiendo tareas específicas, procedimientos a emplear y recursos a utilizar en función del tiempo y espacio, incluyendo operaciones de funcionamiento e inversión",
+      "Es un sistema de planificación estratégica",
+      "Es un sistema de control presupuestario",
+      "Es un sistema de evaluación de resultados"
+    ],
+    "correct": 0,
+    "explanation": "El SPO es el sistema que traduce los objetivos y planes estratégicos de cada entidad en resultados concretos a alcanzar en el corto y mediano plazo, definiendo tareas específicas, procedimientos a emplear y recursos a utilizar en función del tiempo y espacio, incluyendo operaciones de funcionamiento e inversión."
+  },
+  {
+    "question": "¿Qué preceptos rigen al Sistema de Organización Administrativa (SOA) según el Artículo 7 de la Ley Nº 1178?",
+    "options": [
+      "Se ajusta en función de la Programación de Operaciones para evitar duplicidad de objetivos, estableciendo que se centralizarán en la entidad cabeza de sector las funciones de adoptar políticas y emitir normas, mientras que se desconcentrará o descentralizará la ejecución de las políticas y el manejo de los sistemas",
+      "Se basa en la jerarquía exclusivamente",
+      "Se rige por criterios de centralización total",
+      "Se fundamenta en la descentralización absoluta"
+    ],
+    "correct": 0,
+    "explanation": "El SOA se ajusta en función de la Programación de Operaciones para evitar duplicidad de objetivos. Establece que se centralizarán en la entidad cabeza de sector las funciones de adoptar políticas y emitir normas, mientras que se desconcentrará o descentralizará la ejecución de las políticas y el manejo de los sistemas."
+  },
+  {
+    "question": "¿Qué limitaciones establece el Sistema de Presupuesto respecto a la transferencia de gastos según el Artículo 8 de la Ley Nº 1178?",
+    "options": [
+      "Prohíbe terminantemente a las entidades gubernamentales transferir gastos de inversión a gastos de funcionamiento, debiendo sujetar sus gastos totales a la disponibilidad de sus recursos y límites legales presupuestarios",
+      "Permite la transferencia de gastos con autorización",
+      "No establece limitaciones específicas",
+      "Solo prohíbe transferir gastos de funcionamiento a inversión"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 8 prohíbe terminantemente a las entidades gubernamentales transferir gastos de inversión a gastos de funcionamiento, debiendo sujetar sus gastos totales a la disponibilidad de sus recursos y límites legales presupuestarios."
+  },
+  {
+    "question": "¿Qué procesos debe determinar el Sistema de Administración de Personal (SAP) de acuerdo al Artículo 9 de la Ley Nº 1178?",
+    "options": [
+      "Debe determinar los puestos de trabajo necesarios, los requisitos para proveerlos, implantar regímenes de evaluación y retribución, desarrollar las capacidades de los servidores y establecer los procedimientos para su retiro",
+      "Solo debe determinar los puestos de trabajo",
+      "Únicamente establecer regímenes de retribución",
+      "Exclusivamente desarrollar capacidades de los servidores"
+    ],
+    "correct": 0,
+    "explanation": "El SAP debe determinar los puestos de trabajo necesarios, los requisitos para proveerlos, implantar regímenes de evaluación y retribución, desarrollar las capacidades de los servidores y establecer los procedimientos para su retiro."
+  },
+  {
+    "question": "¿Cuáles son las atribuciones que diferencia el Sistema de Administración de Bienes y Servicios (SABS) en sus procesos?",
+    "options": [
+      "Debe diferenciar claramente las atribuciones de solicitar, autorizar el inicio y llevar a cabo el proceso de contratación, simplificando trámites e identificando a los responsables de la decisión en relación a calidad, oportunidad y precio",
+      "Solo debe diferenciar entre compras y contrataciones",
+      "Únicamente debe identificar a los responsables",
+      "Exclusivamente simplificar trámites"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 10 de la Ley Nº 1178, este sistema debe diferenciar claramente las atribuciones de solicitar, autorizar el inicio y llevar a cabo el proceso de contratación, simplificando trámites e identificando a los responsables de la decisión en relación a calidad, oportunidad y precio."
+  },
+  {
+    "question": "¿Quién es la única autoridad facultada para contraer deuda pública interna o externa según el Artículo 11 de la Ley Nº 1178?",
+    "options": [
+      "Toda deuda pública con plazo igual o mayor a un año debe ser contraída por la máxima autoridad del Sistema de Tesorería del Estado (Tesoro Nacional), a excepción de entidades que, por reglamento, contraigan obligaciones a través del mercado de valores nacional o extranjero",
+      "Cualquier entidad pública puede contraer deuda",
+      "Solo el Ministerio de Economía puede hacerlo",
+      "Las gobernaciones pueden contraer deuda sin restricción"
+    ],
+    "correct": 0,
+    "explanation": "Toda deuda pública con plazo igual o mayor a un año debe ser contraída por la máxima autoridad del Sistema de Tesorería del Estado (Tesoro Nacional), a excepción de entidades que, por reglamento, contraigan obligaciones a través del mercado de valores nacional o extranjero."
+  },
+  {
+    "question": "¿Qué característica fundamental tiene el Sistema de Contabilidad Integrada según el Artículo 12 de la Ley Nº 1178?",
+    "options": [
+      "Es un sistema común, oportuno y confiable que incorpora las transacciones presupuestarias, financieras y patrimoniales en un solo registro, permitiendo identificar el costo de las acciones del Estado y medir los resultados obtenidos",
+      "Es un sistema contable tradicional",
+      "Solo registra transacciones financieras",
+      "Es un sistema de control interno"
+    ],
+    "correct": 0,
+    "explanation": "Es un sistema común, oportuno y confiable que incorpora las transacciones presupuestarias, financieras y patrimoniales en un solo registro, permitiendo identificar el costo de las acciones del Estado y medir los resultados obtenidos."
+  },
+  {
+    "question": "¿Cómo se integra el Control Gubernamental y cuál es su objetivo según el Artículo 13 de la Ley Nº 1178?",
+    "options": [
+      "Su objetivo es mejorar la eficiencia en el uso de recursos y la rendición de cuentas, y está integrado por el Sistema de Control Interno (previo y posterior incorporado en la propia entidad) y el Sistema de Control Externo Posterior (aplicado por medio de auditoría externa)",
+      "Solo se integra por el Control Interno",
+      "Únicamente se integra por el Control Externo",
+      "Su objetivo es sancionar a los servidores públicos"
+    ],
+    "correct": 0,
+    "explanation": "Su objetivo es mejorar la eficiencia en el uso de recursos y la rendición de cuentas. Está integrado por el Sistema de Control Interno (previo y posterior incorporado en la propia entidad) y el Sistema de Control Externo Posterior (aplicado por medio de auditoría externa)."
+  },
+  {
+    "question": "¿En qué consiste el 'Control Interno Previo' y quiénes tienen prohibido ejercerlo según el Artículo 14 de la Ley Nº 1178?",
+    "options": [
+      "Comprende la verificación del cumplimiento de normas y conveniencia de una operación antes de su ejecución, y se prohíbe expresamente que los responsables de la auditoría interna o personas externas a la unidad ejecutora realicen controles previos",
+      "Es la revisión de operaciones después de ejecutadas",
+      "Puede ser ejercido por cualquier funcionario",
+      "Es una función exclusiva de la Contraloría"
+    ],
+    "correct": 0,
+    "explanation": "Comprende la verificación del cumplimiento de normas y conveniencia de una operación antes de su ejecución. Se prohíbe expresamente que los responsables de la auditoría interna o personas externas a la unidad ejecutora realicen controles previos."
+  },
+  {
+    "question": "¿De quién depende la Unidad de Auditoría Interna (UAI) y cuál es su grado de autonomía según el Artículo 15 de la Ley Nº 1178?",
+    "options": [
+      "La UAI depende de la Máxima Autoridad Ejecutiva (MAE) de la entidad, pero debe formular y ejecutar su programa de actividades con total independencia, sin participar en ninguna otra operación o actividad administrativa",
+      "Depende de la Contraloría General",
+      "No tiene autonomía",
+      "Participa en actividades administrativas de la entidad"
+    ],
+    "correct": 0,
+    "explanation": "La UAI depende de la Máxima Autoridad Ejecutiva (MAE) de la entidad, pero debe formular y ejecutar su programa de actividades con total independencia, sin participar en ninguna otra operación o actividad administrativa."
+  },
+  {
+    "question": "¿Qué carácter tienen las recomendaciones de la auditoría externa según el Artículo 16 de la Ley Nº 1178?",
+    "options": [
+      "Las recomendaciones de la auditoría externa, una vez discutidas y aceptadas por la entidad auditada, son de cumplimiento obligatorio",
+      "Son solo sugerencias",
+      "No son vinculantes",
+      "Deben ser aprobadas por el Ministerio"
+    ],
+    "correct": 0,
+    "explanation": "Las recomendaciones de la auditoría externa, una vez discutidas y aceptadas por la entidad auditada, son de cumplimiento obligatorio."
+  },
+  {
+    "question": "¿Quiénes son los Órganos Rectores de los sistemas de administración y control según el Artículo 22 y 23 de la Ley Nº 1178?",
+    "options": [
+      "El Ministerio de Hacienda (actual Ministerio de Economía y Finanzas Públicas) es el órgano rector de los sistemas de administración, mientras que la Contraloría General de la República (actual del Estado) es el órgano rector del sistema de Control Gubernamental",
+      "La Contraloría es rectora de todos los sistemas",
+      "El Ministerio de Economía es rector de todos los sistemas",
+      "No existe un órgano rector definido"
+    ],
+    "correct": 0,
+    "explanation": "El Ministerio de Hacienda (actual Ministerio de Economía y Finanzas Públicas) es el órgano rector de los sistemas de administración (SPO, SOA, Presupuesto, SAP, SABS, Tesorería y Contabilidad), mientras que la Contraloría General de la República (actual del Estado) es el órgano rector del sistema de Control Gubernamental."
+  },
+  {
+    "question": "¿Qué obligación tienen las entidades públicas respecto a la rendición de cuentas según el Artículo 27 inciso c) de la Ley Nº 1178?",
+    "options": [
+      "Toda entidad o funcionario que recaude, reciba, pague o custodie fondos, valores o bienes del Estado, tiene la obligación de rendir cuenta de la administración a su cargo por intermedio del sistema contable, con documentación sustentatoria",
+      "Solo los funcionarios que manejan fondos deben rendir cuentas",
+      "La rendición de cuentas es voluntaria",
+      "No es necesaria la documentación sustentatoria"
+    ],
+    "correct": 0,
+    "explanation": "Toda entidad o funcionario que recaude, reciba, pague o custodie fondos, valores o bienes del Estado, tiene la obligación de rendir cuenta de la administración a su cargo por intermedio del sistema contable, con documentación sustentatoria."
+  },
+  {
+    "question": "¿Qué se presume respecto a las operaciones realizadas por un servidor público según el Artículo 28 de la Ley Nº 1178?",
+    "options": [
+      "Se presume la licitud de las operaciones y actividades realizadas por todo servidor público mientras no se demuestre lo contrario",
+      "Se presume la ilicitud",
+      "No existe presunción alguna",
+      "Se presume la responsabilidad"
+    ],
+    "correct": 0,
+    "explanation": "Se presume la licitud de las operaciones y actividades realizadas por todo servidor público mientras no se demuestre lo contrario."
+  },
+  {
+    "question": "¿Cómo define la Ley Nº 1178 el término 'Servidor Público' en su Artículo 28?",
+    "options": [
+      "Se refiere a los dignatarios, funcionarios y toda otra persona que preste servicios en relación de dependencia con autoridades estatales, cualquiera sea la fuente de su remuneración",
+      "Solo a los funcionarios de carrera",
+      "Únicamente a los dignatarios del Estado",
+      "Exclusivamente a los empleados del Poder Ejecutivo"
+    ],
+    "correct": 0,
+    "explanation": "Se refiere a los dignatarios, funcionarios y toda otra persona que preste servicios en relación de dependencia con autoridades estatales, cualquiera sea la fuente de su remuneración."
+  },
+  {
+    "question": "¿Cuándo se determina la Responsabilidad Administrativa y qué sanciones conlleva según el Artículo 29 de la Ley Nº 1178?",
+    "options": [
+      "Emerge cuando la acción u omisión contraviene el ordenamiento jurídico-administrativo y las normas de conducta, con sanciones de multa (hasta 20% de la remuneración), suspensión (hasta 30 días) o destitución",
+      "Solo cuando hay daño económico",
+      "Las sanciones son solo multas",
+      "No existe responsabilidad administrativa"
+    ],
+    "correct": 0,
+    "explanation": "Emerge cuando la acción u omisión contraviene el ordenamiento jurídico-administrativo y las normas de conducta. Las sanciones son: multa (hasta 20% de la remuneración), suspensión (hasta 30 días) o destitución."
+  },
+  {
+    "question": "¿Qué es la Responsabilidad Ejecutiva y quién es el único facultado para dictaminarla según los Artículos 30 y 39 del D.S. 23318-A?",
+    "options": [
+      "Emerge de una gestión deficiente o negligente o por no rendir cuentas, y el Contralor General de la República es la única autoridad facultada para dictaminar la responsabilidad ejecutiva",
+      "Emerge de actos de corrupción",
+      "Puede ser dictaminada por el Ministerio de Economía",
+      "No existe tal responsabilidad"
+    ],
+    "correct": 0,
+    "explanation": "Emerge de una gestión deficiente o negligente o por no rendir cuentas. El Contralor General de la República es la única autoridad facultada para dictaminar la responsabilidad ejecutiva."
+  },
+  {
+    "question": "¿En qué consiste la Responsabilidad Civil y qué sucede si varias personas son responsables del mismo hecho según el Artículo 31 de la Ley Nº 1178?",
+    "options": [
+      "Emerge de una acción u omisión que cause daño al Estado valuable en dinero, y cuando varias personas resultan responsables del mismo acto que causó daño, serán solidariamente responsables",
+      "Solo aplica a daños físicos al Estado",
+      "Cada responsable responde de forma individual",
+      "No existe responsabilidad solidaria"
+    ],
+    "correct": 0,
+    "explanation": "Emerge de una acción u omisión que cause daño al Estado valuable en dinero. Cuando varias personas resultan responsables del mismo acto que causó daño, serán solidariamente responsables."
+  },
+  {
+    "question": "¿Bajo qué condiciones no existe responsabilidad administrativa, ejecutiva ni civil según el Artículo 33 de la Ley Nº 1178?",
+    "options": [
+      "No existe responsabilidad cuando se pruebe que la decisión fue tomada en procura de mayor beneficio y resguardo de los bienes de la entidad, dentro de los riesgos propios de operación o por fuerza mayor",
+      "Solo por fuerza mayor",
+      "Cuando la decisión fue aprobada por el superior",
+      "Siempre que no haya daño económico"
+    ],
+    "correct": 0,
+    "explanation": "No existe responsabilidad cuando se pruebe que la decisión fue tomada en procura de mayor beneficio y resguardo de los bienes de la entidad, dentro de los riesgos propios de operación o por fuerza mayor."
+  },
+  {
+    "question": "¿Cuál es la obligación de la unidad legal ante indicios de responsabilidad penal según el Artículo 35 de la Ley Nº 1178?",
+    "options": [
+      "La unidad legal pertinente, previa solicitud a la autoridad legal competente, debe solicitar medidas precautorias ante el juez o denunciar los hechos ante el Ministerio Público de forma inmediata",
+      "Solo debe informar al superior",
+      "No tiene obligación de actuar",
+      "Debe esperar instrucciones del Contralor"
+    ],
+    "correct": 0,
+    "explanation": "La unidad legal pertinente, previa solicitud a la autoridad legal competente, debe solicitar medidas precautorias ante el juez o denunciar los hechos ante el Ministerio Público de forma inmediata."
+  },
+  {
+    "question": "¿Cuál es el plazo de prescripción de la Responsabilidad Civil y qué establece la Constitución al respecto según el Artículo 40 modificado?",
+    "options": [
+      "Originalmente era de 10 años, pero según el Artículo 112 de la Constitución Política del Estado, los delitos cometidos por servidores públicos que atenten contra el patrimonio del Estado y causen grave daño económico son imprescriptibles",
+      "Prescribe a los 5 años",
+      "Prescribe a los 15 años",
+      "No existe prescripción para ningún caso"
+    ],
+    "correct": 0,
+    "explanation": "Originalmente era de 10 años, pero según el Artículo 112 de la Constitución Política del Estado (citado en la Ley), los delitos cometidos por servidores públicos que atenten contra el patrimonio del Estado y causen grave daño económico son imprescriptibles."
+  },
+  {
+    "question": "¿Qué facultad tiene el Contralor General ante el incumplimiento de plazos para implantar sistemas en una entidad según el Artículo 42 inciso e) de la Ley Nº 1178?",
+    "options": [
+      "El Contralor puede ordenar el congelamiento de cuentas corrientes bancarias de la entidad y la suspensión de entrega de fondos por los tesoros del Estado o cualquier organismo financiador",
+      "Solo puede emitir una llamada de atención",
+      "Puede multar a la entidad",
+      "No tiene facultad alguna"
+    ],
+    "correct": 0,
+    "explanation": "El Contralor puede ordenar el congelamiento de cuentas corrientes bancarias de la entidad y la suspensión de entrega de fondos por los tesoros del Estado o cualquier organismo financiador."
+  },
+  {
+    "question": "¿Qué valor tiene el Dictamen del Contralor General según el Artículo 43 inciso a) de la Ley Nº 1178?",
+    "options": [
+      "El dictamen del Contralor, junto a los informes y documentos que lo sustentan, constituyen prueba preconstituida para la acción administrativa, ejecutiva y civil a que hubiere lugar",
+      "Es solo una opinión técnica",
+      "No tiene valor probatorio",
+      "Debe ser ratificado por un juez"
+    ],
+    "correct": 0,
+    "explanation": "El dictamen del Contralor, junto a los informes y documentos que lo sustentan, constituyen prueba preconstituida para la acción administrativa, ejecutiva y civil a que hubiere lugar."
+  },
+  {
+    "question": "¿Cuál es el objeto de la Jurisdicción Coactiva Fiscal creada por el Artículo 47 de la Ley Nº 1178?",
+    "options": [
+      "Conocer todas las demandas por actos de servidores públicos o particulares con contratos administrativos que determinen responsabilidades civiles (daño económico al Estado)",
+      "Conocer delitos penales cometidos por servidores públicos",
+      "Juzgar faltas administrativas",
+      "Resolver conflictos laborales"
+    ],
+    "correct": 0,
+    "explanation": "Conocer todas las demandas por actos de servidores públicos o particulares con contratos administrativos que determinen responsabilidades civiles (daño económico al Estado)."
+  },
+  {
+    "question": "¿Cómo define el Reglamento de Responsabilidad (D.S. 23318-A) la 'Eficiencia' en el Artículo 4?",
+    "options": [
+      "La eficiencia se da cuando la relación entre los recursos invertidos y los resultados obtenidos se aproxima a un índice establecido o a un indicador externo aplicable",
+      "Es hacer más con menos recursos",
+      "Es cumplir con los objetivos propuestos",
+      "Es la optimización de recursos"
+    ],
+    "correct": 0,
+    "explanation": "La eficiencia se da cuando la relación entre los recursos invertidos y los resultados obtenidos se aproxima a un índice establecido o a un indicador externo aplicable."
+  },
+  {
+    "question": "¿Cuál es el plazo de prescripción para la Responsabilidad Administrativa según el Artículo 16 del D.S. 23318-A?",
+    "options": [
+      "La responsabilidad administrativa prescribe a los dos años de cometida la contravención, plazo que se interrumpe con el inicio de un proceso interno",
+      "Prescribe a los 5 años",
+      "Prescribe a los 3 años",
+      "No prescribe"
+    ],
+    "correct": 0,
+    "explanation": "La responsabilidad administrativa prescribe a los dos años de cometida la contravención, plazo que se interrumpe con el inicio de un proceso interno."
+  },
+  {
+    "question": "¿Cuáles son las etapas del Proceso Interno para determinar responsabilidad administrativa según el Artículo 18 del D.S. 23318-A?",
+    "options": [
+      "El proceso interno consta de dos etapas: la etapa sumarial (investigación y resolución inicial) y la etapa de impugnación (recursos de revocatoria y jerárquico)",
+      "Investigación, juzgamiento y apelación",
+      "Instrucción, prueba y sentencia",
+      "Solo existe una etapa"
+    ],
+    "correct": 0,
+    "explanation": "El proceso interno consta de dos etapas: la etapa sumarial (investigación y resolución inicial) y la etapa de impugnación (recursos de revocatoria y jerárquico)."
+  },
+  {
+    "question": "¿Cuál es el objeto de la Ley Nº 004 'Marcelo Quiroga Santa Cruz'?",
+    "options": [
+      "Establecer mecanismos y procedimientos para prevenir, investigar, procesar y sancionar actos de corrupción cometidos por servidoras y servidores públicos (o ex servidores) y personas naturales o jurídicas que comprometan recursos del Estado, además de recuperar el patrimonio afectado",
+      "Solo sancionar actos de corrupción",
+      "Únicamente prevenir la corrupción",
+      "Exclusivamente recuperar el patrimonio afectado"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 1 de la Ley Nº 004, el objeto es establecer mecanismos y procedimientos para prevenir, investigar, procesar y sancionar actos de corrupción cometidos por servidoras y servidores públicos (o ex servidores) y personas naturales o jurídicas que comprometan recursos del Estado, además de recuperar el patrimonio afectado."
+  },
+  {
+    "question": "¿Cómo define la Ley Nº 004 el concepto de 'Corrupción'?",
+    "options": [
+      "La define como el requerimiento, aceptación, ofrecimiento u otorgamiento (directo o indirecto) de objetos de valor, dádivas, favores o ventajas por parte de un servidor público o persona privada, a cambio de una acción u omisión que afecte los intereses del Estado",
+      "Solo como el uso indebido de recursos públicos",
+      "Como cualquier acto ilegal cometido por un funcionario",
+      "Como el enriquecimiento ilícito"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 2 de la Ley Nº 004 la define como el requerimiento, aceptación, ofrecimiento u otorgamiento (directo o indirecto) de objetos de valor, dádivas, favores o ventajas por parte de un servidor público o persona privada, a cambio de una acción u omisión que afecte los intereses del Estado."
+  },
+  {
+    "question": "¿Cuál es la finalidad de la Ley de Lucha Contra la Corrupción?",
+    "options": [
+      "La prevención, acabar con la impunidad en hechos de corrupción, la lucha efectiva contra estos actos y la recuperación y protección del patrimonio estatal con participación de la sociedad civil",
+      "Solo la prevención de la corrupción",
+      "Únicamente la sanción de los corruptos",
+      "Exclusivamente la recuperación de bienes"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 3 de la Ley Nº 004, su finalidad es la prevención, acabar con la impunidad en hechos de corrupción, la lucha efectiva contra estos actos y la recuperación y protección del patrimonio estatal con participación de la sociedad civil."
+  },
+  {
+    "question": "Explique el principio de 'Ama Suwa' (No seas ladrón) según esta norma.",
+    "options": [
+      "Toda persona, nacional o extranjera, tiene la obligación de velar por los bienes y patrimonio del Estado, protegiéndolos y custodiándolos como si fueran propios en beneficio del bien común",
+      "Es un principio de la cultura quechua",
+      "Se refiere a no robar bienes particulares",
+      "Es un principio religioso"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 4 de la Ley Nº 004 establece que toda persona, nacional o extranjera, tiene la obligación de velar por los bienes y patrimonio del Estado, protegiéndolos y custodiándolos como si fueran propios en beneficio del bien común."
+  },
+  {
+    "question": "¿En qué consiste el principio de 'Transparencia' en la gestión pública?",
+    "options": [
+      "Es la práctica y manejo visible de los recursos del Estado por parte de los servidores públicos y personas privadas que presten servicios o comprometan recursos estatales",
+      "Es la publicidad de los actos de gobierno",
+      "Es la rendición de cuentas anual",
+      "Es la apertura de datos públicos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 4 de la Ley Nº 004, es la práctica y manejo visible de los recursos del Estado por parte de los servidores públicos y personas privadas que presten servicios o comprometan recursos estatales."
+  },
+  {
+    "question": "¿A quiénes se aplica el ámbito de la Ley Nº 004?",
+    "options": [
+      "Se aplica a servidores y ex servidores de todos los Órganos del Estado y entidades territoriales autónomas; Ministerio Público, Policía, Fuerzas Armadas, universidades; entidades con participación estatal y personas privadas que causen daño económico al Estado",
+      "Solo a los servidores públicos en activo",
+      "Únicamente a los funcionarios del Poder Ejecutivo",
+      "Exclusivamente a las entidades territoriales"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 5, se aplica a servidores y ex servidores de todos los Órganos del Estado y entidades territoriales autónomas; Ministerio Público, Policía, Fuerzas Armadas, universidades; entidades con participación estatal y personas privadas que causen daño económico al Estado."
+  },
+  {
+    "question": "¿Qué establece la Ley Nº 004 sobre la inmunidad o fueros en delitos de corrupción?",
+    "options": [
+      "Esta Ley no reconoce inmunidad, fuero o privilegio alguno, de conformidad con la Constitución Política del Estado, siendo de aplicación preferente",
+      "Reconoce inmunidad para algunos funcionarios",
+      "Solo aplica a servidores de bajo rango",
+      "Los fueros se mantienen para altos funcionarios"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 5, parágrafo II, determina que esta Ley no reconoce inmunidad, fuero o privilegio alguno, de conformidad con la Constitución Política del Estado, siendo de aplicación preferente."
+  },
+  {
+    "question": "¿Qué instituciones integran el Consejo Nacional de Lucha Contra la Corrupción?",
+    "options": [
+      "Ministerio de Transparencia Institucional, Ministerio de Gobierno, Ministerio Público, Contraloría General del Estado, Unidad de Investigaciones Financieras (UIF), Procuraduría General del Estado y representantes de la Sociedad Civil Organizada",
+      "Solo el Ministerio de Transparencia y la Contraloría",
+      "Únicamente el Ministerio Público y la Policía",
+      "Exclusivamente las entidades del Poder Ejecutivo"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 6 de la Ley Nº 004, está integrado por: Ministerio de Transparencia Institucional, Ministerio de Gobierno, Ministerio Público, Contraloría General del Estado, Unidad de Investigaciones Financieras (UIF), Procuraduría General del Estado y representantes de la Sociedad Civil Organizada."
+  },
+  {
+    "question": "¿Con qué frecuencia mínima debe reunirse el Consejo Nacional de Lucha Contra la Corrupción?",
+    "options": [
+      "Debe reunirse de forma ordinaria por lo menos cuatro veces al año y extraordinariamente a convocatoria de cuatro de sus miembros",
+      "Una vez al año",
+      "Dos veces al año",
+      "Cada mes"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 6, parágrafo III, establece que debe reunirse de forma ordinaria por lo menos cuatro veces al año y extraordinariamente a convocatoria de cuatro de sus miembros."
+  },
+  {
+    "question": "¿Cuáles son los derechos y atribuciones del Control Social en la lucha contra la corrupción?",
+    "options": [
+      "Faculta al Control Social para identificar y denunciar hechos de corrupción o falta de transparencia ante autoridades competentes, además de coadyuvar en procesos administrativos y judiciales",
+      "Solo puede denunciar hechos de corrupción",
+      "Únicamente puede participar en procesos judiciales",
+      "Exclusivamente puede supervisar la gestión pública"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 10 de la Ley Nº 004 faculta al Control Social para identificar y denunciar hechos de corrupción o falta de transparencia ante autoridades competentes, además de coadyuvar en procesos administrativos y judiciales."
+  },
+  {
+    "question": "¿Qué obligación tiene la Máxima Autoridad Ejecutiva (MAE) al conocer un delito de corrupción en su entidad?",
+    "options": [
+      "La MAE debe constituirse obligatoriamente en parte querellante de los delitos de corrupción una vez conocidos. Su omisión implica incurrir en el delito de incumplimiento de deberes",
+      "Solo debe informar al Ministerio Público",
+      "Puede decidir no participar en el proceso",
+      "Debe solicitar la intervención de la Contraloría"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 14 de la Ley Nº 004, la MAE debe constituirse obligatoriamente en parte querellante de los delitos de corrupción una vez conocidos. Su omisión implica incurrir en el delito de incumplimiento de deberes."
+  },
+  {
+    "question": "¿Cómo funciona la reserva de identidad para denunciantes según la Ley Nº 004?",
+    "options": [
+      "El Ministerio de Transparencia guardará reserva de la identidad de los denunciantes y de la documentación presentada. Esta reserva solo podrá levantarse por instancia judicial en un plazo de 72 horas si se dicta sentencia absolutoria",
+      "La identidad del denunciante es siempre pública",
+      "Se levanta la reserva automáticamente al iniciar el proceso",
+      "No existe reserva de identidad"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 17 establece que el Ministerio de Transparencia guardará reserva de la identidad de los denunciantes y de la documentación presentada. Esta reserva solo podrá levantarse por instancia judicial en un plazo de 72 horas si se dicta sentencia absolutoria."
+  },
+  {
+    "question": "¿Se puede invocar el secreto bancario o confidencialidad en investigaciones de corrupción?",
+    "options": [
+      "No, la Ley establece la exención de secreto o confidencialidad en materia de valores, seguros, comercial, tributario y bancario cuando la UIF, Ministerio Público o la Procuraduría requieran información para investigar delitos de corrupción",
+      "Sí, siempre se puede invocar el secreto bancario",
+      "Solo en casos de cuentas personales",
+      "La confidencialidad se mantiene en todos los casos"
+    ],
+    "correct": 0,
+    "explanation": "No. El Artículo 19 y 20 de la Ley Nº 004 establecen la exención de secreto o confidencialidad en materia de valores, seguros, comercial, tributario y bancario cuando la UIF, Ministerio Público o la Procuraduría requieran información para investigar delitos de corrupción."
+  },
+  {
+    "question": "¿Qué es el SIIARBE y cuál es su función principal?",
+    "options": [
+      "Es el Sistema Integrado de Información Anticorrupción y de Recuperación de Bienes del Estado. Su función es centralizar información para el seguimiento de procesos y verificar de oficio las declaraciones juradas de bienes y rentas",
+      "Es un sistema de gestión documental",
+      "Es un sistema de control financiero",
+      "Es un sistema de registro de funcionarios públicos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 23 de la Ley Nº 004, es el Sistema Integrado de Información Anticorrupción y de Recuperación de Bienes del Estado. Su función es centralizar información para el seguimiento de procesos y verificar de oficio las declaraciones juradas de bienes y rentas."
+  },
+  {
+    "question": "Defina el delito de 'Uso Indebido de Bienes y Servicios Públicos' y su sanción.",
+    "options": [
+      "Es el acto de otorgar un fin distinto al destinado a bienes, derechos y acciones del Estado para beneficio propio o de terceros, con una sanción de uno a cuatro años de privación de libertad",
+      "Es el uso de bienes públicos sin autorización",
+      "Es el préstamo de bienes del Estado a particulares",
+      "La sanción es de dos a cinco años"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 26 de la Ley Nº 004 lo define como el acto de otorgar un fin distinto al destinado a bienes, derechos y acciones del Estado para beneficio propio o de terceros. La sanción es de uno a cuatro años de privación de libertad."
+  },
+  {
+    "question": "¿En qué consiste el delito de 'Enriquecimiento Ilícito' para un servidor público?",
+    "options": [
+      "Ocurre cuando el servidor incrementa desproporcionadamente su patrimonio respecto a sus ingresos legítimos sin poder justificarlo. Se sanciona con cinco a diez años de cárcel y decomiso de los bienes",
+      "Es cuando el servidor público recibe regalos",
+      "Es cuando el servidor público tiene negocios privados",
+      "La sanción es de dos a cinco años"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 27 de la Ley Nº 004, ocurre cuando el servidor incrementa desproporcionadamente su patrimonio respecto a sus ingresos legítimos sin poder justificarlo. Se sanciona con cinco a diez años de cárcel y decomiso de los bienes."
+  },
+  {
+    "question": "¿Qué es el 'Favorecimiento al Enriquecimiento Ilícito'?",
+    "options": [
+      "Es la acción de facilitar el nombre o participar en actividades para ocultar, disimular o legitimar el incremento patrimonial injustificado de otra persona, con una sanción de tres a ocho años de cárcel",
+      "Es la ayuda a un servidor público a ocultar bienes",
+      "Es la complicidad en actos de corrupción",
+      "La sanción es de dos a seis años"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 29 de la Ley Nº 004, es la acción de facilitar el nombre o participar en actividades para ocultar, disimular o legitimar el incremento patrimonial injustificado de otra persona. La sanción es de tres a ocho años de cárcel."
+  },
+  {
+    "question": "¿Cuál es la sanción por 'Falsedad en la Declaración Jurada de Bienes y Rentas'?",
+    "options": [
+      "Privación de libertad de uno a cuatro años y multa a quien falseare u omitiere insertar datos económicos o patrimoniales en su declaración jurada",
+      "Multa económica solamente",
+      "Suspensión del cargo por un año",
+      "Destitución del cargo"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 33 de la Ley Nº 004 sanciona con privación de libertad de uno a cuatro años y multa a quien falseare u omitiere insertar datos económicos o patrimoniales en su declaración jurada."
+  },
+  {
+    "question": "Defina el delito de 'Peculado' según la modificación al Código Penal.",
+    "options": [
+      "El servidor público se apropia de dinero, valores o bienes de cuya administración o custodia se halla encargado aprovechando su cargo, con una pena de cinco a diez años",
+      "El servidor público usa bienes públicos para fines privados",
+      "El servidor público otorga contratos a familiares",
+      "La sanción es de tres a ocho años"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 142 de la Ley Nº 004 define como peculado cuando el servidor público se apropia de dinero, valores o bienes de cuya administración o custodia se halla encargado aprovechando su cargo. La pena es de cinco a diez años."
+  },
+  {
+    "question": "¿Qué diferencia al delito de 'Malversación' del Peculado?",
+    "options": [
+      "La malversación consiste en dar a los caudales administrados una aplicación distinta de aquella a la que estuvieren destinados originalmente, con una sanción de tres a ocho años de cárcel",
+      "Es más grave que el peculado",
+      "Es similar al peculado pero con menor pena",
+      "La malversación solo aplica a bienes muebles"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 144 de la Ley Nº 004, la malversación consiste en dar a los caudales administrados una aplicación distinta de aquella a la que estuvieren destinados originalmente, con una sanción de tres a ocho años de cárcel."
+  },
+  {
+    "question": "¿Qué es el 'Uso Indebido de Influencias' según la Ley Nº 004?",
+    "options": [
+      "El servidor público que, aprovechando sus funciones o influencias, obtuviere ventajas o beneficios para sí o para un tercero, con una sanción de tres a ocho años de cárcel",
+      "El uso de contactos políticos para obtener beneficios",
+      "El tráfico de influencias en contrataciones",
+      "La sanción es de dos a cinco años"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 146 sanciona con tres a ocho años de cárcel al servidor público que, aprovechando sus funciones o influencias, obtuviere ventajas o beneficios para sí o para un tercero."
+  },
+  {
+    "question": "¿Cómo se sanciona el 'Incumplimiento de Deberes' si ocasiona daño económico al Estado?",
+    "options": [
+      "Una pena de uno a cuatro años para quien omita o retarde actos de sus funciones, agravándose la pena en un tercio si se ocasiona daño económico al Estado",
+      "Solo con una multa",
+      "Con destitución del cargo",
+      "Con suspensión de seis meses"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 154 establece una pena de uno a cuatro años para quien omita o retarde actos de sus funciones, agravándose la pena en un tercio si se ocasiona daño económico al Estado."
+  },
+  {
+    "question": "¿Qué establece la Ley Nº 004 sobre la 'Prescripción' de los delitos de corrupción?",
+    "options": [
+      "De conformidad con la Constitución, los delitos que atenten contra el patrimonio del Estado y causen grave daño económico son imprescriptibles",
+      "Prescriben a los 10 años",
+      "Prescriben a los 5 años",
+      "Prescriben a los 15 años"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 36 (que incluye el Art. 29 Bis al Procedimiento Penal), de conformidad con la Constitución, los delitos que atenten contra el patrimonio del Estado y causen grave daño económico son imprescriptibles."
+  },
+  {
+    "question": "¿Es posible juzgar a una persona por corrupción si se encuentra ausente (rebelde)?",
+    "options": [
+      "Sí, se establece la prosecución del juicio en rebeldía. El proceso no se suspende, el Estado designa un defensor de oficio y el imputado es juzgado en su ausencia",
+      "No, el proceso se suspende hasta su captura",
+      "Solo si ha sido citado previamente",
+      "No es posible juzgar en rebeldía"
+    ],
+    "correct": 0,
+    "explanation": "Sí. El Artículo 36 (Art. 91 Bis del Procedimiento Penal) establece la prosecución del juicio en rebeldía. El proceso no se suspende, el Estado designa un defensor de oficio y el imputado es juzgado en su ausencia."
+  },
+  {
+    "question": "¿Qué sucede con la 'Suspensión Condicional de la Pena' en delitos de corrupción?",
+    "options": [
+      "La suspensión condicional de la pena no procede, bajo ninguna circunstancia, en delitos de corrupción",
+      "Procede solo para penas menores a 3 años",
+      "Procede para delitos de corrupción leve",
+      "Sí procede en todos los casos"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 37 de la Ley Nº 004 modifica el Código de Procedimiento Penal para establecer que la suspensión condicional de la pena no procede, bajo ninguna circunstancia, en delitos de corrupción."
+  },
+  {
+    "question": "¿Se puede otorgar el 'Perdón Judicial' a sentenciados por corrupción?",
+    "options": [
+      "No, el perdón judicial no procede en delitos de corrupción, sin importar la duración de la pena",
+      "Sí, para penas menores a 3 años",
+      "Sí, en todos los casos",
+      "Depende de la gravedad del delito"
+    ],
+    "correct": 0,
+    "explanation": "No. De acuerdo al Artículo 37 de la Ley Nº 004 (modificación del Art. 368 del C.P.P.), el perdón judicial no procede en delitos de corrupción, sin importar la duración de la pena."
+  },
+  {
+    "question": "¿Qué medida precautoria puede solicitar el Ministerio de Transparencia para proteger el patrimonio estatal?",
+    "options": [
+      "Tanto la Procuraduría como el Ministerio de Transparencia pueden pedir a la autoridad judicial la anotación preventiva de bienes en el registro público para proteger el patrimonio del Estado",
+      "El embargo de bienes",
+      "La confiscación de bienes",
+      "El secuestro de bienes"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 39 de la Ley Nº 004, tanto la Procuraduría como el Ministerio de Transparencia pueden pedir a la autoridad judicial la anotación preventiva de bienes en el registro público para proteger el patrimonio del Estado."
+  },
+  {
+    "question": "¿En qué plazo caduca la anotación preventiva de bienes a favor del Estado?",
+    "options": [
+      "La anotación preventiva a favor del Estado caducará a los cuatro años, prorrogables a dos más, si no es convertida en inscripción definitiva",
+      "Caduca a los 2 años",
+      "Caduca a los 5 años",
+      "No caduca nunca"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 39, parágrafo III, determina que la anotación preventiva a favor del Estado caducará a los cuatro años, prorrogables a dos más, si no es convertida en inscripción definitiva."
+  },
+  {
+    "question": "¿Qué sanción recibe quien realiza 'Nombramientos Ilegales' en la función pública?",
+    "options": [
+      "Privación de libertad de uno a cuatro años para el servidor público que propusiere o nombrare para un cargo a persona que no reúna las condiciones legales",
+      "Multa económica",
+      "Suspensión del cargo",
+      "Destitución del cargo"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 157 de la Ley Nº 004 establece privación de libertad de uno a cuatro años para el servidor público que propusiere o nombrare para un cargo a persona que no reúna las condiciones legales."
+  },
+  {
+    "question": "¿Cómo se garantiza el financiamiento para las políticas de lucha contra la corrupción?",
+    "options": [
+      "El Estado garantizará anualmente recursos propios para asegurar adecuados márgenes de investigación, acusación y juzgamiento en la lucha contra la corrupción",
+      "Con financiamiento externo",
+      "Con donaciones internacionales",
+      "No existe financiamiento garantizado"
+    ],
+    "correct": 0,
+    "explanation": "Según la Disposición Final Segunda de la Ley Nº 004, el Estado garantizará anualmente recursos propios para asegurar adecuados márgenes de investigación, acusación y juzgamiento en la lucha contra la corrupción."
+  },
+  {
+    "question": "¿Cuál es el objeto principal del Reglamento General de Institutos Técnicos y Tecnológicos (R.M. Nº 350/2023)?",
+    "options": [
+      "Normar y regular la apertura, funcionamiento, cierre y régimen sancionatorio de estos institutos en función de las necesidades sociales y potencialidades productivas, promoviendo emprendimientos que articulen el desarrollo regional con las políticas de soberanía alimentaria y tecnológica del Estado",
+      "Solo regular el funcionamiento de los institutos privados",
+      "Únicamente establecer el régimen sancionatorio",
+      "Exclusivamente normar la apertura de nuevos institutos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 1 del Reglamento, su objeto es normar y regular la apertura, funcionamiento, cierre y régimen sancionatorio de estos institutos en función de las necesidades sociales y potencialidades productivas, promoviendo emprendimientos que articulen el desarrollo regional con las políticas de soberanía alimentaria y tecnológica del Estado."
+  },
+  {
+    "question": "¿Cuál es el ámbito de aplicación de este Reglamento?",
+    "options": [
+      "Es de aplicación obligatoria en todos los Institutos Técnicos e Institutos Tecnológicos, sin importar su forma de constitución u organización, dentro de todo el territorio del Estado Plurinacional de Bolivia",
+      "Solo se aplica a los institutos fiscales",
+      "Únicamente a los institutos privados",
+      "Exclusivamente a los institutos de convenio"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 2, el Reglamento es de aplicación obligatoria en todos los Institutos Técnicos e Institutos Tecnológicos, sin importar su forma de constitución u organización, dentro de todo el territorio del Estado Plurinacional de Bolivia."
+  },
+  {
+    "question": "¿Qué objetivos persiguen los Institutos Técnicos y Tecnológicos en relación con el desarrollo regional?",
+    "options": [
+      "Contribuir al desarrollo de la ciencia, tecnología y cultura con sentido crítico y visión holística, difundir el conocimiento vinculado a las necesidades productivas de la región y desarrollar iniciativas sociocomunitario-productivas con responsabilidad social y ambiental",
+      "Solo formar profesionales técnicos",
+      "Únicamente promover el desarrollo tecnológico",
+      "Exclusivamente difundir el conocimiento"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 3 establece que deben contribuir al desarrollo de la ciencia, tecnología y cultura con sentido crítico y visión holística, difundir el conocimiento vinculado a las necesidades productivas de la región y desarrollar iniciativas sociocomunitario-productivas con responsabilidad social y ambiental."
+  },
+  {
+    "question": "¿Cómo se clasifican los institutos por su carácter jurídico?",
+    "options": [
+      "Fiscales (dependen del Estado), De Convenio (servicio social sin fines de lucro bajo administración compartida según convenio), y Privados (legalmente reconocidos con financiamiento propio y supervisión estatal)",
+      "Públicos y privados solamente",
+      "Fiscales y privados",
+      "De convenio y privados"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 4, se clasifican en: a) Fiscales (dependen del Estado), b) De Convenio (servicio social sin fines de lucro bajo administración compartida según convenio), y c) Privados (legalmente reconocidos con financiamiento propio y supervisión estatal)."
+  },
+  {
+    "question": "¿Qué diferencia existe entre la Sede Central y una Subsede de un instituto?",
+    "options": [
+      "La Sede Central es el domicilio principal de funcionamiento administrativo y académico autorizado por Resolución Ministerial, mientras que la Subsede depende de la Sede Central, debe contar con un organigrama independiente y tener un Director Académico como máxima autoridad para garantizar su funcionamiento",
+      "La Sede Central y la Subsede son lo mismo",
+      "La Subsede es independiente de la Sede Central",
+      "La Subsede no requiere de un organigrama propio"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 5 define la Sede Central como el domicilio principal de funcionamiento administrativo y académico autorizado por Resolución Ministerial. Por su parte, el Artículo 6 indica que la Subsede depende de la Sede Central, debe contar con un organigrama independiente y tener un Director Académico como máxima autoridad para garantizar su funcionamiento."
+  },
+  {
+    "question": "¿Bajo qué criterio un Instituto Técnico debe cambiar su nominación a Instituto Tecnológico?",
+    "options": [
+      "Los institutos que soliciten apertura, ampliación de carreras o apertura de subsedes dentro del sector tecnológico (como industria, mecánica, electrónica, entre otros) deben adoptar obligatoriamente la nominación oficial de Instituto Tecnológico",
+      "Cuando tengan más de 10 años de funcionamiento",
+      "Cuando cumplan con ciertos requisitos de infraestructura",
+      "Cuando así lo solicite su director"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 7, parágrafos II, III y IV, los institutos que soliciten apertura, ampliación de carreras o apertura de subsedes dentro del sector tecnológico (como industria, mecánica, electrónica, entre otros) deben adoptar obligatoriamente la nominación oficial de Instituto Tecnológico."
+  },
+  {
+    "question": "¿Cuál es la estructura institucional mínima para el nivel ejecutivo en institutos fiscales y de convenio?",
+    "options": [
+      "El nivel ejecutivo debe estar compuesto por un Rector, un Director Académico y un Director Administrativo",
+      "Solo un Rector",
+      "Un Rector y un Director Académico",
+      "Un Rector y un Director Administrativo"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 8, parágrafo II, el nivel ejecutivo debe estar compuesto por un Rector, un Director Académico y un Director Administrativo."
+  },
+  {
+    "question": "¿Quién es responsable de la asignación de ítems para el personal directivo y docente en institutos fiscales y de convenio?",
+    "options": [
+      "El Ministerio de Educación, el cual asignará ítems en función de la ampliación de nuevas carreras, el número de estudiantes y el techo presupuestario vigente",
+      "El Director Departamental de Educación",
+      "El Rector del instituto",
+      "El Ministerio de Economía"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 9 establece que esta responsabilidad recae en el Ministerio de Educación, el cual asignará ítems en función de la ampliación de nuevas carreras, el número de estudiantes y el techo presupuestario vigente."
+  },
+  {
+    "question": "¿Qué establece el Reglamento sobre la sostenibilidad económica de los institutos privados?",
+    "options": [
+      "Los institutos privados no serán subvencionados por el Estado y deben financiar sus actividades exclusivamente con recursos propios para garantizar su sostenibilidad y la formación profesional",
+      "Recibirán subvención estatal parcial",
+      "Serán financiados por el Estado",
+      "No tienen obligación de sostenibilidad"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 11, parágrafo II, determina que los institutos privados no serán subvencionados por el Estado y deben financiar sus actividades exclusivamente con recursos propios para garantizar su sostenibilidad y la formación profesional."
+  },
+  {
+    "question": "¿Cómo se valora el proceso académico y cuál es el puntaje de aprobación para las y los estudiantes?",
+    "options": [
+      "La evaluación está valorada en una escala de 1 a 100 puntos. Se considera 'Reprobado' de 0 a 60 puntos y 'Aprobado' de 61 a 100 puntos",
+      "Escala de 1 a 100, aprobado con 50 puntos",
+      "Escala de 1 a 100, aprobado con 70 puntos",
+      "Escala de 1 a 100, reprobado de 0 a 50 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 14 de la R.M. 350/2023, la evaluación está valorada en una escala de 1 a 100 puntos. Se considera 'Reprobado' de 0 a 60 puntos y 'Aprobado' de 61 a 100 puntos."
+  },
+  {
+    "question": "¿Cuál es el plazo máximo para la entrega de los Centralizadores de Calificaciones a la Dirección Departamental de Educación (DDE)?",
+    "options": [
+      "Los institutos deben entregar un ejemplar original empastado y en formato digital del libro de centralizadores en un plazo indefectible de diez (10) días hábiles posteriores a la conclusión de cada gestión académica",
+      "5 días hábiles",
+      "15 días hábiles",
+      "20 días hábiles"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 15 indica que los institutos deben entregar un ejemplar original empastado y en formato digital del libro de centralizadores en un plazo indefectible de diez (10) días hábiles posteriores a la conclusión de cada gestión académica."
+  },
+  {
+    "question": "¿En qué tiempo deben emitirse y legalizarse los Certificados de Calificaciones originales?",
+    "options": [
+      "El instituto debe emitir los certificados en un plazo no mayor a quince (15) días hábiles, mientras que la DDE tiene hasta cinco (5) días hábiles para su legalización",
+      "Instituto: 10 días, DDE: 5 días",
+      "Instituto: 20 días, DDE: 10 días",
+      "Instituto: 15 días, DDE: 10 días"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 16, el instituto debe emitir los certificados en un plazo no mayor a quince (15) días hábiles, mientras que la DDE tiene hasta cinco (5) días hábiles para su legalización."
+  },
+  {
+    "question": "Explique en qué consiste la modalidad de graduación 'Proyecto de Grado'.",
+    "options": [
+      "Es un trabajo aplicado o propuesta técnica (modelos, prototipos, dispositivos, etc.) orientada a resolver un problema práctico para la mejora, innovación o modernización tecnológica, plasmado en un documento resumen",
+      "Es un ensayo académico sobre un tema específico",
+      "Es una investigación de campo",
+      "Es una pasantía profesional"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 19, parágrafo I, inciso a), es un trabajo aplicado o propuesta técnica (modelos, prototipos, dispositivos, etc.) orientada a resolver un problema práctico para la mejora, innovación o modernización tecnológica, plasmado en un documento resumen."
+  },
+  {
+    "question": "¿Qué caracteriza a la modalidad de 'Proyecto Sociocomunitario Productivo'?",
+    "options": [
+      "Es una experiencia aplicada a las necesidades socioeconómicas de la comunidad o región, construida participativamente con sujetos económicos reales y coherente con las vocaciones productivas locales",
+      "Es un proyecto de investigación académica",
+      "Es una propuesta de negocio individual",
+      "Es un trabajo de campo sin participación comunitaria"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 19, inciso b), señala que es una experiencia aplicada a las necesidades socioeconómicas de la comunidad o región, construida participativamente con sujetos económicos reales y coherente con las vocaciones productivas locales."
+  },
+  {
+    "question": "¿Qué opciones contempla la 'Graduación por Excelencia' y qué requisitos exige?",
+    "options": [
+      "Contempla: i) Rendimiento Académico (basado en indicadores cuantitativos durante toda la formación) y ii) Reconocimiento a la Innovación (menciones honoríficas en ferias o eventos nacionales/internacionales validados por el Ministerio de Educación)",
+      "Solo rendimiento académico",
+      "Solo reconocimiento a la innovación",
+      "No existe graduación por excelencia"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 19, inciso e), contempla: i) Rendimiento Académico (basado en indicadores cuantitativos durante toda la formación) y ii) Reconocimiento a la Innovación (menciones honoríficas en ferias o eventos nacionales/internacionales validados por el Ministerio de Educación)."
+  },
+  {
+    "question": "¿Cuáles son los requisitos indispensables de ingreso para estudiantes en carreras de nivel Técnico Superior?",
+    "options": [
+      "Fotocopia de cédula de identidad vigente y fotocopia del diploma de bachiller. Sin este último, no se puede proseguir la formación profesional, aunque se acepta provisionalmente por seis meses si está en trámite",
+      "Solo cédula de identidad",
+      "Solo diploma de bachiller",
+      "Cédula de identidad y certificado de nacimiento"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 27 establece como documentos obligatorios: fotocopia de cédula de identidad vigente y fotocopia del diploma de bachiller. Sin este último, no se puede proseguir la formación profesional, aunque se acepta provisionalmente por seis meses si está en trámite."
+  },
+  {
+    "question": "¿Cómo se aplica la 'Transitabilidad' para graduados de Bachillerato Técnico Humanístico (B.T.H.)?",
+    "options": [
+      "Los bachilleres con título de Técnico Medio del sistema regular o alternativo pueden transitar al nivel Técnico Superior de la misma especialidad cursando dos años (régimen anual) o cuatro semestres adicionales, sujeto a disponibilidad de cupos",
+      "Pueden transitar sin ningún requisito adicional",
+      "Deben cursar tres años adicionales",
+      "No pueden transitar al nivel superior"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 28, los bachilleres con título de Técnico Medio del sistema regular o alternativo pueden transitar al nivel Técnico Superior de la misma especialidad cursando dos años (régimen anual) o cuatro semestres adicionales, sujeto a disponibilidad de cupos."
+  },
+  {
+    "question": "¿Cuáles son las condiciones y plazos para solicitar un traspaso de instituto?",
+    "options": [
+      "El estudiante puede pedir traspaso a nivel nacional o departamental en la misma carrera desde el segundo hasta el cuarto semestre (o primer/segundo año en régimen anual), pudiendo ejercer este derecho por una sola vez",
+      "Puede solicitar traspaso en cualquier semestre",
+      "Solo puede solicitar traspaso una vez en toda su formación",
+      "Puede solicitar traspaso solo en el primer semestre"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 29, el estudiante puede pedir traspaso a nivel nacional o departamental en la misma carrera desde el segundo hasta el cuarto semestre (o primer/segundo año en régimen anual), pudiendo ejercer este derecho por una sola vez."
+  },
+  {
+    "question": "¿Qué información obligatoria deben entregar los institutos privados a los estudiantes al momento de inscribirse?",
+    "options": [
+      "Informar por escrito sobre: derechos y obligaciones, la R.M. de funcionamiento vigente, calendario académico, horarios, malla curricular, modalidades de graduación, reglamentos internos y la tabla de aranceles oficial",
+      "Solo el calendario académico y horarios",
+      "Únicamente la malla curricular",
+      "Exclusivamente la tabla de aranceles"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 31 obliga a informar por escrito sobre: derechos y obligaciones, la R.M. de funcionamiento vigente, calendario académico, horarios, malla curricular, modalidades de graduación, reglamentos internos y la tabla de aranceles oficial."
+  },
+  {
+    "question": "¿Qué es la 'Beca Social' y qué porcentaje de estudiantes nuevos debe cubrir en institutos privados?",
+    "options": [
+      "Es una política de responsabilidad social que equivale al 10% del número total de estudiantes nuevos inscritos (según estadística de la última gestión), destinada a bachilleres y personas con discapacidad",
+      "5% de estudiantes nuevos",
+      "15% de estudiantes nuevos",
+      "20% de estudiantes nuevos"
+    ],
+    "correct": 0,
+    "explanation": "Según los Artículos 32 y 33, es una política de responsabilidad social que equivale al 10% del número total de estudiantes nuevos inscritos (según estadística de la última gestión), destinada a bachilleres y personas con discapacidad."
+  },
+  {
+    "question": "¿Cuál es la carga horaria mínima y máxima para obtener el grado de Técnico Superior?",
+    "options": [
+      "Las carreras de nivel Técnico Superior tienen una duración mínima de 3 años, con una carga horaria de entre 3.400 y 3.600 horas académicas",
+      "Mínimo 2.500 y máximo 3.000 horas",
+      "Mínimo 3.000 y máximo 3.500 horas",
+      "Mínimo 3.600 y máximo 4.000 horas"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 37 establece que las carreras de nivel Técnico Superior tienen una duración mínima de 3 años, con una carga horaria de entre 3.400 y 3.600 horas académicas."
+  },
+  {
+    "question": "¿Cómo se distribuye porcentualmente la carga horaria entre teoría y práctica?",
+    "options": [
+      "La carga horaria debe tener un máximo de treinta por ciento (30%) de horas teóricas y un mínimo de setenta por ciento (70%) de horas prácticas",
+      "50% teoría y 50% práctica",
+      "40% teoría y 60% práctica",
+      "20% teoría y 80% práctica"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 39, inciso a), la carga horaria debe tener un máximo de treinta por ciento (30%) de horas teóricas y un mínimo de setenta por ciento (70%) de horas prácticas."
+  },
+  {
+    "question": "¿Qué requisitos de formación profesional debe cumplir un Rector de un instituto técnico tecnológico?",
+    "options": [
+      "Debe contar con Título Profesional a nivel Licenciatura o Superior relacionado con los programas ofertados por el instituto",
+      "Título de Técnico Superior",
+      "Título de Bachiller",
+      "No se requiere título específico"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 47, parágrafo I, indica que debe contar con Título Profesional a nivel Licenciatura o Superior relacionado con los programas ofertados por el instituto."
+  },
+  {
+    "question": "¿En qué consiste el 'Proceso de Institucionalización' para cargos directivos en institutos fiscales?",
+    "options": [
+      "Es un proceso de evaluación y calificación de méritos realizado mediante Convocatoria Pública del Ministerio de Educación para seleccionar autoridades por un periodo de tres (3) gestiones académicas",
+      "Es un proceso de elección por votación",
+      "Es un proceso de designación directa",
+      "Es un proceso de concurso de oposición"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 48, inciso a), es un proceso de evaluación y calificación de méritos realizado mediante Convocatoria Pública del Ministerio de Educación para seleccionar autoridades por un periodo de tres (3) gestiones académicas."
+  },
+  {
+    "question": "¿Cuáles son los requisitos imprescindibles para ser designado Jefe de Carrera?",
+    "options": [
+      "Ser boliviano o extranjero con residencia legal, libreta militar (varones), título profesional de Técnico Superior o grado superior en el área, experiencia mínima de 3 años en docencia en esa carrera y conocimiento de un idioma originario",
+      "Solo título profesional y experiencia",
+      "Título profesional y ser boliviano",
+      "Experiencia y conocimiento de idioma originario"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 48, parágrafo I, inciso f), se requiere: ser boliviano o extranjero con residencia legal, libreta militar (varones), título profesional de Técnico Superior o grado superior en el área, experiencia mínima de 3 años en docencia en esa carrera y conocimiento de un idioma originario."
+  },
+  {
+    "question": "¿Qué documentos de certificación penal y social se exigen para ejercer la docencia?",
+    "options": [
+      "Certificación REJAP (sin antecedentes penales), certificación CENVI (sin antecedentes de violencia contra la mujer/familia) y certificación de no contar con procesos administrativos sancionatorios ni imputación por acoso sexual contra estudiantes",
+      "Solo certificación REJAP",
+      "Certificación REJAP y CENVI",
+      "Solo certificación de no tener procesos administrativos"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 50, parágrafo II, exige: certificación REJAP (sin antecedentes penales), certificación CENVI (sin antecedentes de violencia contra la mujer/familia) y certificación de no contar con procesos administrativos sancionatorios ni imputación por acoso sexual contra estudiantes."
+  },
+  {
+    "question": "¿Cuál es la vigencia de la Resolución Ministerial para institutos privados y cuándo debe ratificarse?",
+    "options": [
+      "Establece una vigencia de 6 años calendario. El trámite de ratificación debe iniciarse sesenta (60) días antes del vencimiento; de lo contrario, se aplican sanciones pecuniarias según el retraso",
+      "Vigencia de 5 años, ratificación 90 días antes",
+      "Vigencia de 4 años, ratificación 30 días antes",
+      "Vigencia de 10 años, ratificación 60 días antes"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 68 establece una vigencia de 6 años calendario. El trámite de ratificación debe iniciarse sesenta (60) días antes del vencimiento; de lo contrario, se aplican sanciones pecuniarias según el retraso."
+  },
+  {
+    "question": "¿Cuáles son las superficies mínimas por estudiante exigidas para la infraestructura académica?",
+    "options": [
+      "1,20 m² en aulas; 1,50 m² en talleres y laboratorios de carreras técnicas; y 2,00 m² en talleres y laboratorios de carreras tecnológicas",
+      "1,00 m² en aulas; 1,20 m² en talleres; 1,50 m² en laboratorios",
+      "1,50 m² en aulas; 2,00 m² en talleres; 2,50 m² en laboratorios",
+      "No hay superficie mínima establecida"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 94, se requieren: 1,20 m² en aulas; 1,50 m² en talleres y laboratorios de carreras técnicas; y 2,00 m² en talleres y laboratorios de carreras tecnológicas."
+  },
+  {
+    "question": "¿Qué obligaciones de publicidad y transparencia deben cumplir los institutos en sus predios?",
+    "options": [
+      "Los institutos deben exponer obligatoriamente, en lugar público y visible, la Resolución Ministerial de funcionamiento vigente y el Certificado de Registro de Instituciones Técnicos Tecnológicos (RITT)",
+      "Solo la Resolución Ministerial",
+      "Solo el Certificado RITT",
+      "No tienen obligación de publicidad"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 101, los institutos deben exponer obligatoriamente, en lugar público y visible, la Resolución Ministerial de funcionamiento vigente y el Certificado de Registro de Instituciones Técnicos Tecnológicos (RITT)."
+  },
+  {
+    "question": "¿Cuál es la sanción para un instituto que funcione sin autorización expresa del Ministerio de Educación?",
+    "options": [
+      "El establecimiento será precintado como 'INSTITUTO ILEGAL', no se reconocerán los estudios realizados en él y se procederá a la denuncia penal ante el Ministerio Público por desobediencia a la autoridad",
+      "Solo se le impondrá una multa",
+      "Se le suspenderá temporalmente",
+      "Se le otorgará un plazo para regularizarse"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 104, inciso j), el establecimiento será precintado como 'INSTITUTO ILEGAL', no se reconocerán los estudios realizados en él y se procederá a la denuncia penal ante el Ministerio Público por desobediencia a la autoridad."
+  },
+  {
+    "question": "¿Cuál es el objeto primordial del Manual de Organización y Funciones (MOF) aprobado por la R.M. 0525/2018?",
+    "options": [
+      "Definir las relaciones de dependencia jerárquica y la Estructura Organizativa de los Institutos Técnicos y Tecnológicos, así como describir los objetivos y funciones generales y específicas de cada Unidad Organizacional en sujeción al marco normativo vigente",
+      "Establecer los salarios del personal",
+      "Definir solo las funciones del rector",
+      "Regular la infraestructura de los institutos"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 1 del MOF, su objeto es definir las relaciones de dependencia jerárquica y la Estructura Organizativa de los Institutos Técnicos y Tecnológicos, así como describir los objetivos y funciones generales y específicas de cada Unidad Organizacional en sujeción al marco normativo vigente."
+  },
+  {
+    "question": "¿Cuál es el ámbito de aplicación de este Manual y quién es el responsable de su implementación?",
+    "options": [
+      "Es de aplicación obligatoria para todos los ITTs de carácter Fiscal, de Convenio y Privado a nivel nacional, y la responsabilidad de su implementación recae en la Máxima Autoridad o Responsable del Instituto, bajo seguimiento de la Subdirección de Educación Superior de la respectiva Dirección Departamental",
+      "Solo para institutos fiscales",
+      "Solo para institutos privados",
+      "La implementación es voluntaria"
+    ],
+    "correct": 0,
+    "explanation": "Según los Artículos 2 y 3 del MOF, es de aplicación obligatoria para todos los ITTs de carácter Fiscal, de Convenio y Privado a nivel nacional. La responsabilidad de su implementación recae en la Máxima Autoridad o Responsable del Instituto, bajo seguimiento de la Subdirección de Educación Superior de la respectiva Dirección Departamental."
+  },
+  {
+    "question": "¿Cómo se divide la Estructura Institucional de un ITT según su nivel jerárquico?",
+    "options": [
+      "1. Nivel Deliberativo (Consejos), 2. Nivel Ejecutivo (Rectoría y Direcciones), 3. Nivel Operativo (Jefes de Carrera y Docentes) y el Personal Administrativo",
+      "Solo Nivel Ejecutivo y Operativo",
+      "Nivel Deliberativo y Ejecutivo",
+      "Nivel Superior, Medio y Básico"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 6 y el cuadro de estructura establecen cuatro niveles: 1. Nivel Deliberativo (Consejos), 2. Nivel Ejecutivo (Rectoría y Direcciones), 3. Nivel Operativo (Jefes de Carrera y Docentes) y el Personal Administrativo."
+  },
+  {
+    "question": "¿Qué instancias conforman el 'Nivel Deliberativo' de un Instituto Técnico Tecnológico?",
+    "options": [
+      "El Consejo Institucional y el Consejo Académico",
+      "Solo el Consejo Institucional",
+      "Solo el Consejo Académico",
+      "El Consejo y la Asamblea"
+    ],
+    "correct": 0,
+    "explanation": "Conforme a la estructura orgánica del MOF, este nivel está compuesto por el Consejo Institucional y el Consejo Académico."
+  },
+  {
+    "question": "¿Cuál es el objetivo principal del cargo de Rectora o Rector según el MOF?",
+    "options": [
+      "Desarrollar una gestión institucional eficiente, transparente y de calidad, posicionando al Instituto en el contexto local, regional y nacional para asegurar una formación profesional integral de alto nivel",
+      "Administrar los recursos económicos",
+      "Dirigir las actividades académicas",
+      "Supervisar al personal administrativo"
+    ],
+    "correct": 0,
+    "explanation": "El objetivo es desarrollar una gestión institucional eficiente, transparente y de calidad, posicionando al Instituto en el contexto local, regional y nacional para asegurar una formación profesional integral de alto nivel."
+  },
+  {
+    "question": "¿Qué responsabilidad tiene el Rector respecto al Plan Estratégico Institucional (PEI)?",
+    "options": [
+      "Debe liderar el diseño del PEI del Instituto para un periodo de 5 años, en concordancia con las normas, objetivos y lineamientos definidos por el Ministerio de Educación",
+      "Solo debe aprobar el PEI",
+      "Debe ejecutar el PEI sin participación en su diseño",
+      "El PEI no es responsabilidad del Rector"
+    ],
+    "correct": 0,
+    "explanation": "Según la función número 8 del Rector, este debe liderar el diseño del PEI del Instituto para un periodo de 5 años, en concordancia con las normas, objetivos y lineamientos definidos por el Ministerio de Educación."
+  },
+  {
+    "question": "¿Qué autoridad es responsable de aprobar el presupuesto del Instituto y bajo qué condiciones?",
+    "options": [
+      "Es atribución del Rector aprobar la ejecución del presupuesto conforme a las normas y procedimientos establecidos, a través de la Dirección Administrativa del Instituto",
+      "El Director Administrativo",
+      "El Consejo Académico",
+      "El Ministerio de Educación"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo a la función 7 del Rector, es su atribución aprobar la ejecución del presupuesto conforme a las normas y procedimientos establecidos, a través de la Dirección Administrativa del Instituto."
+  },
+  {
+    "question": "¿Cuál es la obligación del Rector respecto a la rendición de cuentas y la transparencia?",
+    "options": [
+      "Debe aprobar, presentar y difundir el informe de gestión del Instituto ante los actores estratégicos, realizando la rendición de cuentas a la comunidad educativa y social",
+      "Solo debe presentar el informe al Ministerio",
+      "Debe rendir cuentas únicamente al Consejo",
+      "No tiene obligación de rendir cuentas"
+    ],
+    "correct": 0,
+    "explanation": "La función 16 establece que el Rector debe aprobar, presentar y difundir el informe de gestión del Instituto ante los actores estratégicos, realizando la rendición de cuentas a la comunidad educativa y social."
+  },
+  {
+    "question": "¿Cuál es el objetivo central de la Directora o Director Académico?",
+    "options": [
+      "Implementar políticas institucionales y estrategias académicas que garanticen la calidad de la formación profesional técnica y tecnológica de los estudiantes, cumpliendo con los diseños curriculares aprobados por el Ministerio de Educación",
+      "Administrar los recursos económicos",
+      "Gestionar el personal docente",
+      "Supervisar la infraestructura"
+    ],
+    "correct": 0,
+    "explanation": "Su objetivo es implementar políticas institucionales y estrategias académicas que garanticen la calidad de la formación profesional técnica y tecnológica de los estudiantes, cumpliendo con los diseños curriculares aprobados por el Ministerio de Educación."
+  },
+  {
+    "question": "¿Qué responsabilidad tiene el Director Académico sobre la oferta de nuevas carreras?",
+    "options": [
+      "Debe proponer a la DGESTTLA, por intermedio del Rector, los diseños curriculares para la oferta de nuevas carreras o cursos de capacitación vinculados a los sectores productivos",
+      "Puede aprobar nuevas carreras directamente",
+      "Solo debe informar al Rector sobre nuevas carreras",
+      "No tiene responsabilidad sobre nuevas carreras"
+    ],
+    "correct": 0,
+    "explanation": "Según la función 5 de su cargo, debe proponer a la DGESTTLA, por intermedio del Rector, los diseños curriculares para la oferta de nuevas carreras o cursos de capacitación vinculados a los sectores productivos."
+  },
+  {
+    "question": "¿Cómo debe el Director Académico gestionar la evaluación del desempeño docente?",
+    "options": [
+      "Debe diseñar y ejecutar instrumentos en coordinación con los Jefes de Carreras para evaluar el desempeño docente y el aprovechamiento estudiantil en el proceso de formación",
+      "Solo debe aplicar una encuesta a los estudiantes",
+      "La evaluación docente es responsabilidad exclusiva del Rector",
+      "No es necesario evaluar el desempeño docente"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo a la función 17, debe diseñar y ejecutar instrumentos en coordinación con los Jefes de Carreras para evaluar el desempeño docente y el aprovechamiento estudiantil en el proceso de formación."
+  },
+  {
+    "question": "¿Qué autoridad debe supervisar los procesos de admisión e inscripción y resolver problemas emergentes?",
+    "options": [
+      "El Director Académico, quien debe brindar apoyo y solución a las demandas de cada carrera en los procesos de ingreso",
+      "El Rector",
+      "El Jefe de Carrera",
+      "El Director Administrativo"
+    ],
+    "correct": 0,
+    "explanation": "Esta es una función específica del Director Académico (función 25), quien debe brindar apoyo y solución a las demandas de cada carrera en los procesos de ingreso."
+  },
+  {
+    "question": "¿Cuál es el objetivo principal del cargo de Directora o Director Administrativo?",
+    "options": [
+      "Administrar los recursos financieros, económicos, bienes y servicios, así como la gestión de recursos humanos, bajo principios de oportunidad, transparencia, eficiencia y legalidad",
+      "Dirigir las actividades académicas",
+      "Supervisar a los docentes",
+      "Diseñar planes de estudio"
+    ],
+    "correct": 0,
+    "explanation": "Administrar los recursos financieros, económicos, bienes y servicios, así como la gestión de recursos humanos, bajo principios de oportunidad, transparencia, eficiencia y legalidad."
+  },
+  {
+    "question": "¿Qué relación tiene el Director Administrativo con la Ley SAFCO (Ley 1178)?",
+    "options": [
+      "Tiene la responsabilidad de impulsar la implementación de todos los subsistemas de la Ley 1178 en toda la estructura institucional del ITT",
+      "Solo debe cumplir con el sistema de presupuesto",
+      "Debe implementar solo el sistema de contabilidad",
+      "No tiene relación con la Ley 1178"
+    ],
+    "correct": 0,
+    "explanation": "Según la función 6 de su cargo, el Director Administrativo tiene la responsabilidad de impulsar la implementación de todos los subsistemas de la Ley 1178 en toda la estructura institucional del ITT."
+  },
+  {
+    "question": "¿Quién es responsable de programar y ejecutar el mantenimiento preventivo y correctivo de la infraestructura y equipos?",
+    "options": [
+      "El Director Administrativo",
+      "El Rector",
+      "El Director Académico",
+      "El Jefe de Carrera"
+    ],
+    "correct": 0,
+    "explanation": "Esta responsabilidad corresponde al Director Administrativo, según lo estipulado en la función 16 de su descripción de cargo."
+  },
+  {
+    "question": "¿Qué informes debe elaborar el Director Administrativo respecto al personal para el Seguro Social?",
+    "options": [
+      "Debe elaborar y presentar los partes mensuales de asistencia, altas y bajas de afiliación al Seguro Social de Corto Plazo y AFPs, a través del Rectorado ante la Dirección Departamental de Educación",
+      "Solo debe presentar las altas",
+      "Solo debe presentar las bajas",
+      "No debe presentar informes al Seguro Social"
+    ],
+    "correct": 0,
+    "explanation": "Debe elaborar y presentar los partes mensuales de asistencia, altas y bajas de afiliación al Seguro Social de Corto Plazo y AFPs, a través del Rectorado ante la Dirección Departamental de Educación (función 27)."
+  },
+  {
+    "question": "¿Cuál es el objetivo de un Jefe de Carrera dentro de la estructura operativa?",
+    "options": [
+      "Planificar, coordinar, dirigir y evaluar las actividades académicas y curriculares de la carrera asignada, garantizando la optimización de la calidad educativa",
+      "Administrar los recursos de la carrera",
+      "Supervisar solo a los docentes",
+      "Realizar tareas administrativas"
+    ],
+    "correct": 0,
+    "explanation": "Planificar, coordinar, dirigir y evaluar las actividades académicas y curriculares de la carrera asignada, garantizando la optimización de la calidad educativa."
+  },
+  {
+    "question": "¿Qué tipo de informes estadísticos debe elevar periódicamente el Jefe de Carrera?",
+    "options": [
+      "Debe informar sobre la cantidad de inscritos, aprobados, reprobados y abandono en su carrera, detallando las acciones asumidas al respecto",
+      "Solo informar sobre inscritos y aprobados",
+      "Solo informar sobre reprobados",
+      "No debe presentar informes estadísticos"
+    ],
+    "correct": 0,
+    "explanation": "Según la función 6, debe informar sobre la cantidad de inscritos, aprobados, reprobados y abandono en su carrera, detallando las acciones asumidas al respecto."
+  },
+  {
+    "question": "¿Cuál es el rol del Jefe de Carrera en las prácticas profesionales o pasantías?",
+    "options": [
+      "Debe identificar espacios para el desarrollo de prácticas, gestionar la firma de convenios o alianzas estratégicas ante las autoridades del Instituto y supervisar las mismas",
+      "Solo supervisar las prácticas",
+      "Solo gestionar convenios",
+      "No tiene participación en las prácticas"
+    ],
+    "correct": 0,
+    "explanation": "Debe identificar espacios para el desarrollo de prácticas, gestionar la firma de convenios o alianzas estratégicas ante las autoridades del Instituto y supervisar las mismas (función 8)."
+  },
+  {
+    "question": "¿Qué responsabilidad tiene el Jefe de Carrera sobre los activos y bienes asignados a su área?",
+    "options": [
+      "Asume responsabilidad por el uso y resguardo de los bienes de su carrera y debe gestionar oportunamente su mantenimiento preventivo y correctivo",
+      "Solo debe reportar daños",
+      "No tiene responsabilidad sobre los bienes",
+      "Solo debe gestionar mantenimiento"
+    ],
+    "correct": 0,
+    "explanation": "Según las funciones 19 y 20, asume responsabilidad por el uso y resguardo de los bienes de su carrera y debe gestionar oportunamente su mantenimiento preventivo y correctivo."
+  },
+  {
+    "question": "¿Cuál es el objetivo principal de la función docente en los ITTs?",
+    "options": [
+      "Desarrollar procesos formativos con pertinencia académica, promoviendo la formación integral del estudiante en el marco del Diseño Curricular Base y el Modelo Sociocomunitario Productivo",
+      "Solo dictar clases teóricas",
+      "Únicamente evaluar a los estudiantes",
+      "Exclusivamente preparar material didáctico"
+    ],
+    "correct": 0,
+    "explanation": "Desarrollar procesos formativos con pertinencia académica, promoviendo la formación integral del estudiante en el marco del Diseño Curricular Base y el Modelo Sociocomunitario Productivo."
+  },
+  {
+    "question": "¿Con qué frecuencia debe el docente presentar su planificación curricular y plan de trabajo?",
+    "options": [
+      "Debe elaborar la planificación al inicio de gestión y el plan de trabajo de forma semanal, los cuales deben ser aprobados por la Dirección Académica",
+      "Planificación anual y plan mensual",
+      "Planificación semestral y plan diario",
+      "Solo planificación al inicio de gestión"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo a la función 9 del cargo docente, debe elaborar la planificación al inicio de gestión y el plan de trabajo de forma semanal, los cuales deben ser aprobados por la Dirección Académica."
+  },
+  {
+    "question": "¿Qué instrumentos de registro debe llevar obligatoriamente el docente para el proceso formativo?",
+    "options": [
+      "Debe elaborar, aplicar y llevar consigo el registro pedagógico y otros documentos relacionados al proceso formativo actualizados de forma continua",
+      "Solo el registro de notas",
+      "Solo la lista de asistencia",
+      "No debe llevar instrumentos de registro"
+    ],
+    "correct": 0,
+    "explanation": "La función 10 establece que el docente debe elaborar, aplicar y llevar consigo el registro pedagógico y otros documentos relacionados al proceso formativo actualizados de forma continua."
+  },
+  {
+    "question": "¿Qué rol juegan las TICs en la metodología del docente según el MOF?",
+    "options": [
+      "El docente debe implementar estrategias metodológicas apoyadas en las Tecnologías de Información y Comunicación (TICs) como herramienta de trabajo para garantizar la participación activa de los estudiantes",
+      "Las TICs no son necesarias",
+      "Solo se usan para tareas administrativas",
+      "Se usan solo en carreras tecnológicas"
+    ],
+    "correct": 0,
+    "explanation": "Según la función 6, el docente debe implementar estrategias metodológicas apoyadas en las Tecnologías de Información y Comunicación (TICs) como herramienta de trabajo para garantizar la participación activa de los estudiantes."
+  },
+  {
+    "question": "¿Qué objetivo tiene el personal de Secretaría (tanto de Dirección Académica como Administrativa)?",
+    "options": [
+      "Apoyar en las tareas académicas, administrativas y operacionales para lograr el óptimo funcionamiento, manejo, actualización y resguardo de la documentación oficial del Instituto",
+      "Solo atender el teléfono",
+      "Solo archivar documentos",
+      "Exclusivamente redactar oficios"
+    ],
+    "correct": 0,
+    "explanation": "Apoyar en las tareas académicas, administrativas y operacionales para lograr el óptimo funcionamiento, manejo, actualización y resguardo de la documentación oficial del Instituto."
+  },
+  {
+    "question": "¿Cuál es el deber de la secretaria/o respecto a la información a la que tiene acceso?",
+    "options": [
+      "Debe conservar estrictamente la confidencialidad de la documentación e información a la que tiene acceso",
+      "Puede compartir información con otros",
+      "No tiene deber de confidencialidad",
+      "Debe publicar la información"
+    ],
+    "correct": 0,
+    "explanation": "Según la función 6 en ambos casos (Académica y Administrativa), debe conservar estrictamente la confidencialidad de la documentación e información a la que tiene acceso."
+  },
+  {
+    "question": "¿Quién es responsable de la elaboración de los Centralizadores de Calificaciones y boletines de notas?",
+    "options": [
+      "Es una función específica de la Secretaría de la Dirección Académica, quien asume responsabilidad en el registro y elaboración de estos documentos bajo supervisión jerárquica",
+      "El Jefe de Carrera",
+      "El Director Académico",
+      "El docente de la materia"
+    ],
+    "correct": 0,
+    "explanation": "Esta es una función específica de la Secretaría de la Dirección Académica (función 14), quien asume responsabilidad en el registro y elaboración de estos documentos bajo supervisión jerárquica."
+  },
+  {
+    "question": "¿Qué tareas administrativas de control de personal realiza la Secretaría de Dirección Administrativa?",
+    "options": [
+      "Debe elaborar y hacer firmar los Partes Mensuales de Asistencia y emitir los reportes de asistencia bajo la supervisión de la Dirección Administrativa",
+      "Solo elaborar los Partes",
+      "Solo emitir reportes",
+      "No realiza tareas de control de personal"
+    ],
+    "correct": 0,
+    "explanation": "Debe elaborar y hacer firmar los Partes Mensuales de Asistencia y emitir los reportes de asistencia bajo la supervisión de la Dirección Administrativa (funciones 15 y 16)."
+  },
+  {
+    "question": "¿Cuál es el objetivo del Personal de Apoyo (Conserje-Portero)?",
+    "options": [
+      "Garantizar el mantenimiento, resguardo y protección de los bienes del Instituto, así como apoyar en el desarrollo de las funciones institucionales definidas por las autoridades",
+      "Solo limpiar las instalaciones",
+      "Solo atender el ingreso de personas",
+      "Exclusivamente realizar tareas de jardinería"
+    ],
+    "correct": 0,
+    "explanation": "Garantizar el mantenimiento, resguardo y protección de los bienes del Instituto, así como apoyar en el desarrollo de las funciones institucionales definidas por las autoridades."
+  },
+  {
+    "question": "¿Qué responsabilidades de vigilancia tiene el portero respecto a las instalaciones?",
+    "options": [
+      "Debe vigilar el funcionamiento de las instalaciones, informando anomalías de manera inmediata, y reportar siniestros o accidentes al personal directivo",
+      "Solo abrir y cerrar las puertas",
+      "Solo recibir correspondencia",
+      "No tiene responsabilidades de vigilancia"
+    ],
+    "correct": 0,
+    "explanation": "Según las funciones 8 y 10, debe vigilar el funcionamiento de las instalaciones, informando anomalías de manera inmediata, y reportar siniestros o accidentes al personal directivo."
+  },
+  {
+    "question": "¿Cuál es el objeto específico del Reglamento aprobado mediante la R.M. Nº 1027/2023?",
+    "options": [
+      "Normar y regular la apertura, funcionamiento y cierre de los Centros de Capacitación Artística (CECA's) e Institutos de Formación Artística (IFA's) pertenecientes al Subsistema de Educación Superior de Formación Profesional, ya sean de carácter fiscal, de convenio o privado",
+      "Solo regular los institutos de formación artística",
+      "Únicamente regular los centros de capacitación artística",
+      "Exclusivamente normar el cierre de estos centros"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 1 del Reglamento, su objeto es normar y regular la apertura, funcionamiento y cierre de los Centros de Capacitación Artística (CECA's) e Institutos de Formación Artística (IFA's) pertenecientes al Subsistema de Educación Superior de Formación Profesional, ya sean de carácter fiscal, de convenio o privado."
+  },
+  {
+    "question": "¿Cuáles son las finalidades del Reglamento respecto a las expresiones artístico-culturales de las naciones indígenas?",
+    "options": [
+      "Contribuir a la recuperación, protección, valoración, desarrollo, recreación y difusión de las expresiones artístico-culturales de las naciones y pueblos indígena originario campesinos, comunidades interculturales y afrobolivianas",
+      "Solo promover el arte indígena",
+      "Únicamente proteger el arte tradicional",
+      "Exclusivamente difundir el arte afroboliviano"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 2, inciso c), una de sus finalidades es contribuir a la recuperación, protección, valoración, desarrollo, recreación y difusión de las expresiones artístico-culturales de las naciones y pueblos indígena originario campesinos, comunidades interculturales y afrobolivianas."
+  },
+  {
+    "question": "¿Cuál es el marco jurídico en el que se sustenta esta normativa?",
+    "options": [
+      "Se sustenta en la Constitución Política del Estado y la Ley Nº 070 de 20 de diciembre de 2010, de la Educación 'Avelino Siñani - Elizardo Pérez'",
+      "Solo en la Constitución",
+      "Solo en la Ley 070",
+      "En el Código de Educación"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 3, el Reglamento se sustenta en la Constitución Política del Estado y la Ley Nº 070 de 20 de diciembre de 2010, de la Educación 'Avelino Siñani - Elizardo Pérez'."
+  },
+  {
+    "question": "¿A qué instituciones es de aplicación obligatoria este Reglamento?",
+    "options": [
+      "Es de aplicación obligatoria para todos los Centros de Capacitación Artística (CECA's) e Institutos de Formación Artística (IFA's) de carácter fiscal, de convenio y privado del Estado Plurinacional de Bolivia",
+      "Solo a los centros fiscales",
+      "Solo a los institutos privados",
+      "Solo a los de convenio"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 4 establece que es de aplicación obligatoria para todos los Centros de Capacitación Artística (CECA's) e Institutos de Formación Artística (IFA's) de carácter fiscal, de convenio y privado del Estado Plurinacional de Bolivia."
+  },
+  {
+    "question": "¿Qué objetivos persigue la Formación Superior Artística según el Artículo 5?",
+    "options": [
+      "a) Formar profesionales con capacidades, competencias y destrezas artísticas y creativas; b) Recuperar y difundir las expresiones culturales de las naciones indígenas y afrobolivianas; y c) Fortalecer la diversidad cultural del Estado en sus diferentes manifestaciones artísticas",
+      "Solo formar profesionales artísticos",
+      "Solo recuperar expresiones culturales",
+      "Solo fortalecer la diversidad cultural"
+    ],
+    "correct": 0,
+    "explanation": "Sus objetivos son: a) Formar profesionales con capacidades, competencias y destrezas artísticas y creativas; b) Recuperar y difundir las expresiones culturales de las naciones indígenas y afrobolivianas; y c) Fortalecer la diversidad cultural del Estado en sus diferentes manifestaciones artísticas."
+  },
+  {
+    "question": "¿Cómo se constituye la Estructura Institucional de la Formación Superior Artística?",
+    "options": [
+      "Se constituye por: a) Centros de Capacitación Artística (programas de corta duración para formación integral); y b) Institutos de Formación Artística (programas a nivel de capacitación, técnico medio y superior)",
+      "Solo por los CECA's",
+      "Solo por los IFA's",
+      "Por CECA's, IFA's y conservatorios"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 6, se constituye por: a) Centros de Capacitación Artística (programas de corta duración para formación integral); y b) Institutos de Formación Artística (programas a nivel de capacitación, técnico medio y superior)."
+  },
+  {
+    "question": "¿Cuál es la estructura orgánica mínima de un Instituto de Formación Artística (IFA)?",
+    "options": [
+      "Debe contar como mínimo con: Rector/a, Director/a Académico/a, Director/a Administrativo/a, Plantel Docente y Personal Administrativo",
+      "Rector y docentes",
+      "Director Académico y Personal Administrativo",
+      "Solo Rector y Personal Administrativo"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 6, parágrafo II, inciso b), un IFA debe contar como mínimo con: Rector/a, Director/a Académico/a, Director/a Administrativo/a, Plantel Docente y Personal Administrativo."
+  },
+  {
+    "question": "¿Cómo se definen los Institutos de Formación Artística de carácter 'De Convenio'?",
+    "options": [
+      "Son instituciones de servicio social y sin fines de lucro que funcionan bajo las normas del Ministerio de Educación, pero cuya administración corresponde a la contraparte en el marco de convenios firmados con el Estado",
+      "Son instituciones privadas",
+      "Son instituciones fiscales",
+      "Son organizaciones no gubernamentales"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 7, inciso b), los define como instituciones de servicio social y sin fines de lucro que funcionan bajo las normas del Ministerio de Educación, pero cuya administración corresponde a la contraparte en el marco de convenios firmados con el Estado."
+  },
+  {
+    "question": "¿Qué requisitos deben cumplir los institutos privados para que el Estado garantice su funcionamiento?",
+    "options": [
+      "Deben estar legalmente reconocidos y contar con infraestructura, equipamiento, mobiliario y recursos humanos necesarios para garantizar la calidad de la formación artística y el fortalecimiento de vocaciones productivas",
+      "Solo deben estar legalmente reconocidos",
+      "Solo deben contar con infraestructura",
+      "Deben tener financiamiento internacional"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 7, inciso c), deben estar legalmente reconocidos y contar con infraestructura, equipamiento, mobiliario y recursos humanos necesarios para garantizar la calidad de la formación artística y el fortalecimiento de vocaciones productivas."
+  },
+  {
+    "question": "¿Qué define a la 'Sede Central' de un CECA o IFA?",
+    "options": [
+      "Es el domicilio principal de funcionamiento donde se desarrollan las actividades académicas y administrativas, autorizada mediante Resolución Ministerial según las necesidades regionales y el Plan Nacional de Desarrollo",
+      "Es cualquier local donde funcione el instituto",
+      "Es el lugar donde se realizan las clases",
+      "Es la oficina administrativa"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 8, es el domicilio principal de funcionamiento donde se desarrollan las actividades académicas y administrativas, autorizada mediante Resolución Ministerial según las necesidades regionales y el Plan Nacional de Desarrollo."
+  },
+  {
+    "question": "¿Qué condiciones debe cumplir una 'Subsede' para garantizar su funcionamiento?",
+    "options": [
+      "Debe depender administrativa y académicamente de la Sede Central, contar con un organigrama independiente y tener un Director Académico como máxima autoridad",
+      "Debe ser independiente de la Sede Central",
+      "No requiere de un organigrama",
+      "Puede funcionar sin Director Académico"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 9 establece que debe depender administrativa y académicamente de la Sede Central, contar con un organigrama independiente y tener un Director Académico como máxima autoridad."
+  },
+  {
+    "question": "¿De quién es responsabilidad la asignación de ítems en institutos fiscales y de convenio?",
+    "options": [
+      "Es responsabilidad del Ministerio de Educación, en función a la ampliación de carreras, número de estudiantes y el techo presupuestario asignado",
+      "Del Director Departamental de Educación",
+      "Del Rector del instituto",
+      "Del Ministerio de Economía"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 10, es responsabilidad del Ministerio de Educación, en función a la ampliación de carreras, número de estudiantes y el techo presupuestario asignado."
+  },
+  {
+    "question": "¿Cómo pueden los CECA's e IFA's fiscales generar recursos propios según el Reglamento?",
+    "options": [
+      "Pueden generar producciones artísticas como parte de la promoción y difusión cultural, debiendo tener un registro contable de ingresos y egresos sujeto a fiscalización",
+      "No pueden generar recursos propios",
+      "Pueden vender sus servicios libremente",
+      "Pueden recibir donaciones sin control"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 11 indica que pueden generar producciones artísticas como parte de la promoción y difusión cultural, debiendo tener un registro contable de ingresos y egresos sujeto a fiscalización."
+  },
+  {
+    "question": "¿Quién define el Calendario Académico para la Formación Superior Artística?",
+    "options": [
+      "El Ministerio de Educación lo define mediante las Normas Generales para la Gestión Educativa Superior, en concordancia con las potencialidades productivas de la región",
+      "El Director Departamental",
+      "El Rector del instituto",
+      "El Consejo Académico"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 12, el Ministerio de Educación lo define mediante las Normas Generales para la Gestión Educativa Superior, en concordancia con las potencialidades productivas de la región."
+  },
+  {
+    "question": "¿Qué componentes integran el 'Currículo' según el Artículo 13?",
+    "options": [
+      "Es el conjunto de criterios, planes de estudio, programas, metodologías y de evaluación que contribuyen a la formación integral artística",
+      "Solo planes de estudio",
+      "Solo metodologías",
+      "Solo criterios de evaluación"
+    ],
+    "correct": 0,
+    "explanation": "Es el conjunto de criterios, planes de estudio, programas, metodologías y de evaluación que contribuyen a la formación integral artística."
+  },
+  {
+    "question": "¿Cuáles son los objetivos específicos de los Centros de Capacitación Artística (CECA's)?",
+    "options": [
+      "Impartir cursos de capacitación para distintas edades, ofrecer programas de perfeccionamiento, crear vínculos con la sociedad, recuperar saberes culturales y ofrecer capacitación inclusiva y terapéutica",
+      "Solo impartir cursos de capacitación",
+      "Solo ofrecer programas de perfeccionamiento",
+      "Solo recuperar saberes culturales"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 15, incluyen impartir cursos de capacitación para distintas edades, ofrecer programas de perfeccionamiento, crear vínculos con la sociedad, recuperar saberes culturales y ofrecer capacitación inclusiva y terapéutica."
+  },
+  {
+    "question": "¿En qué áreas y disciplinas se clasifican los programas de los CECA's?",
+    "options": [
+      "Artes Escénicas (Danza, Teatro), Artes Musicales (Música), Artes Visuales (Artes Plásticas), Artes Audiovisuales (Cinematografía, Animación) y Artes Populares (Artesanía, Tradición Oral)",
+      "Solo Artes Musicales y Visuales",
+      "Solo Artes Escénicas y Audiovisuales",
+      "Solo Artes Populares"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 16 las clasifica en: Artes Escénicas (Danza, Teatro), Artes Musicales (Música), Artes Visuales (Artes Plásticas), Artes Audiovisuales (Cinematografía, Animación) y Artes Populares (Artesanía, Tradición Oral)."
+  },
+  {
+    "question": "¿Cuál es la carga horaria permitida para los cursos de capacitación en los CECA's?",
+    "options": [
+      "La carga horaria es de un máximo de 1.200 horas académicas y un mínimo de 80 horas, distribuidas en 20% teóricas y 80% prácticas",
+      "Máximo 1.000 horas, mínimo 100 horas",
+      "Máximo 1.500 horas, mínimo 50 horas",
+      "Máximo 800 horas, mínimo 40 horas"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 16, parágrafo III, la carga horaria es de un máximo de 1.200 horas académicas y un mínimo de 80 horas, distribuidas en 20% teóricas y 80% prácticas."
+  },
+  {
+    "question": "¿Qué estructura debe seguir el 'Proyecto Educativo' para la apertura de un CECA privado?",
+    "options": [
+      "Debe incluir: 1) Proyecto Institucional (misión, visión, justificación, organigrama, recursos físicos y declaración jurada) y 2) Programa Académico",
+      "Solo Proyecto Institucional",
+      "Solo Programa Académico",
+      "No se requiere proyecto educativo"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 19, debe incluir: 1) Proyecto Institucional (misión, visión, justificación, organigrama, recursos físicos y declaración jurada) y 2) Programa Académico."
+  },
+  {
+    "question": "¿Cuál es el plazo para la entrega del Centralizador de Asistencia en los CECA's?",
+    "options": [
+      "Un plazo indefectible de diez (10) días hábiles posteriores a la finalización de cada módulo para la entrega de un ejemplar original y digital a la Dirección Departamental de Educación",
+      "5 días hábiles",
+      "15 días hábiles",
+      "20 días hábiles"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 20 establece un plazo indefectible de diez (10) días hábiles posteriores a la finalización de cada módulo para la entrega de un ejemplar original y digital a la Dirección Departamental de Educación."
+  },
+  {
+    "question": "¿Quién emite los Certificados de Capacitación y en qué plazo?",
+    "options": [
+      "Los emite la Dirección Departamental de Educación en un plazo no mayor a cinco (5) días hábiles tras la solicitud, previa verificación de la asistencia total",
+      "El instituto, en 5 días",
+      "El Ministerio, en 10 días",
+      "El Director del curso, en 3 días"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 21, los emite la Dirección Departamental de Educación en un plazo no mayor a cinco (5) días hábiles tras la solicitud, previa verificación de la asistencia total."
+  },
+  {
+    "question": "¿Cómo se divide la Formación Superior Artística profesional?",
+    "options": [
+      "Se divide en: 1) Formación Artística Básica (pre-bachillerato) y 2) Formación Superior Artística Profesional (post-bachillerato)",
+      "Solo en Formación Artística Básica",
+      "Solo en Formación Superior Artística Profesional",
+      "Se divide en 3 niveles"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 23, se divide en: 1) Formación Artística Básica (pre-bachillerato) y 2) Formación Superior Artística Profesional (post-bachillerato)."
+  },
+  {
+    "question": "¿Cuáles son los niveles de la Formación Artística Básica y a qué edad suele iniciar?",
+    "options": [
+      "Inicia habitualmente a los ocho o nueve años y se compone de los niveles: Inicial, Básico e Intermedio",
+      "Inicia a los 6 años, niveles: Inicial y Básico",
+      "Inicia a los 10 años, niveles: Básico e Intermedio",
+      "Inicia a los 12 años, niveles: Inicial y Avanzado"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 23 indica que inicia habitualmente a los ocho o nueve años y se compone de los niveles: Inicial, Básico e Intermedio."
+  },
+  {
+    "question": "¿Cuál es la duración mínima exigida para las carreras de Técnico Medio y Técnico Superior en Artes?",
+    "options": [
+      "El nivel Técnico Medio requiere mínimo 2.400 horas académicas, mientras que el Técnico Superior requiere mínimo 3.600 horas académicas",
+      "Técnico Medio: 2.000 horas, Técnico Superior: 3.000 horas",
+      "Técnico Medio: 3.000 horas, Técnico Superior: 4.000 horas",
+      "Técnico Medio: 2.500 horas, Técnico Superior: 3.500 horas"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 23, el nivel Técnico Medio requiere mínimo 2.400 horas académicas, mientras que el Técnico Superior requiere mínimo 3.600 horas académicas."
+  },
+  {
+    "question": "¿Qué régimen de estudio reconoce el Reglamento para los IFA's?",
+    "options": [
+      "El régimen de estudio reconocido debe ser anual",
+      "Semestral",
+      "Trimestral",
+      "Cuatrimestral"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 24 establece que el régimen de estudio reconocido debe ser anual."
+  },
+  {
+    "question": "¿Cómo se distribuye porcentualmente la carga horaria en los IFA's?",
+    "options": [
+      "La carga horaria se distribuye en un máximo de 30% de horas teóricas y un mínimo de 70% de horas prácticas",
+      "50% teórico y 50% práctico",
+      "40% teórico y 60% práctico",
+      "20% teórico y 80% práctico"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 25, la carga horaria se distribuye en un máximo de 30% de horas teóricas y un mínimo de 70% de horas prácticas."
+  },
+  {
+    "question": "¿Cuánto dura una 'hora académica' en la formación artística?",
+    "options": [
+      "Equivale a 45 minutos para contenidos teóricos y entre 45 a 60 minutos para actividades prácticas, según la especialidad",
+      "60 minutos para todo",
+      "50 minutos para todo",
+      "40 minutos para teoría y 50 para práctica"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 25, inciso b), define que equivale a 45 minutos para contenidos teóricos y entre 45 a 60 minutos para actividades prácticas, según la especialidad."
+  },
+  {
+    "question": "¿Cuál es la escala de valoración para la evaluación del proceso académico estudiantil?",
+    "options": [
+      "La evaluación se valora de 1 a 100 puntos. Se considera 'Reprobado' de 1 a 60 puntos y 'Aprobado' de 61 a 100 puntos",
+      "Escala de 1 a 100, aprobado con 50 puntos",
+      "Escala de 1 a 100, aprobado con 70 puntos",
+      "Escala de 1 a 100, reprobado de 0 a 50 puntos"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 27, la evaluación se valora de 1 a 100 puntos. Se considera 'Reprobado' de 1 a 60 puntos y 'Aprobado' de 61 a 100 puntos."
+  },
+  {
+    "question": "¿Qué modalidades de graduación se reconocen para el nivel Técnico Superior?",
+    "options": [
+      "Se reconocen: Presentación Práctica Artística, Proyecto Artístico de Grado, Monografía y Pasantía",
+      "Solo Proyecto Artístico y Monografía",
+      "Solo Presentación Práctica y Pasantía",
+      "Solo Monografía"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 31, inciso b), se reconocen: Presentación Práctica Artística, Proyecto Artístico de Grado, Monografía y Pasantía."
+  },
+  {
+    "question": "¿Qué documento acredita la culminación del Nivel Intermedio de la Formación Artística Básica?",
+    "options": [
+      "El estudiante obtiene un Diploma en el programa correspondiente (ej. Diploma en Música Clásica, en Danza Clásica o Interpretación Teatral)",
+      "Certificado de estudios",
+      "Título de Técnico Medio",
+      "Constancia de culminación"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 32 señala que el estudiante obtiene un Diploma en el programa correspondiente (ej. Diploma en Música Clásica, en Danza Clásica o Interpretación Teatral)."
+  },
+  {
+    "question": "¿Cuál es el plazo para que los IFA's entreguen los Centralizadores de Calificaciones?",
+    "options": [
+      "Debe hacerse en un plazo indefectible de diez (10) días hábiles posteriores a la finalización de cada gestión académica",
+      "5 días hábiles",
+      "15 días hábiles",
+      "20 días hábiles"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 33 establece que debe hacerse en un plazo indefectible de diez (10) días hábiles posteriores a la finalización de cada gestión académica."
+  },
+  {
+    "question": "¿Quién emite el Título Profesional y qué validez tiene?",
+    "options": [
+      "El Título Profesional es otorgado por el Ministerio de Educación, tiene validez en todo el territorio nacional y habilita para el ejercicio profesional",
+      "El instituto, tiene validez departamental",
+      "El Ministerio, tiene validez regional",
+      "El Director Departamental, tiene validez nacional"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 39, el Título Profesional es otorgado por el Ministerio de Educación, tiene validez en todo el territorio nacional y habilita para el ejercicio profesional."
+  },
+  {
+    "question": "¿En qué consiste la 'Evaluación Comunitaria' en los Institutos?",
+    "options": [
+      "Es el proceso de valoración que realiza la comunidad a la que pertenece el instituto sobre su desenvolvimiento y el cumplimiento de objetivos comunes",
+      "Es una evaluación de los estudiantes",
+      "Es una evaluación de los docentes",
+      "Es una evaluación de la infraestructura"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 40, es el proceso de valoración que realiza la comunidad a la que pertenece el instituto sobre su desenvolvimiento y el cumplimiento de objetivos comunes."
+  },
+  {
+    "question": "¿Qué requisitos de ingreso son indispensables para la Formación Superior Artística Profesional?",
+    "options": [
+      "Se requiere fotocopia de cédula de identidad, fotocopia de diploma de bachiller (o certificado de estudios si está en trámite por 6 meses) y prueba de admisión",
+      "Solo cédula de identidad y prueba de admisión",
+      "Solo diploma de bachiller",
+      "Cédula de identidad y certificado de nacimiento"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 42, se requiere fotocopia de cédula de identidad, fotocopia de diploma de bachiller (o certificado de estudios si está en trámite por 6 meses) y prueba de admisión."
+  },
+  {
+    "question": "¿Qué son los Exámenes de Suficiencia y cuántas asignaturas se pueden rendir bajo esta modalidad?",
+    "options": [
+      "Son pruebas extraordinarias para establecer el dominio de una competencia. Un estudiante puede rendir un máximo de diez (10) asignaturas bajo esta modalidad en toda su formación",
+      "Son pruebas ordinarias, máximo 5 asignaturas",
+      "Son pruebas de nivelación, máximo 8 asignaturas",
+      "Son pruebas de suficiencia, máximo 12 asignaturas"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 43 los define como pruebas extraordinarias para establecer el dominio de una competencia. Un estudiante puede rendir un máximo de diez (10) asignaturas bajo esta modalidad en toda su formación."
+  },
+  {
+    "question": "¿Qué establece el Reglamento sobre la 'Transitabilidad' entre niveles?",
+    "options": [
+      "Permite que graduados de Técnico Medio Post-bachillerato transiten al nivel Técnico Superior de la misma especialidad cumpliendo un (1) año adicional de formación superior",
+      "No permite transitabilidad",
+      "Permite transitabilidad con 2 años adicionales",
+      "Permite transitabilidad con 6 meses adicionales"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 44 permite que graduados de Técnico Medio Post-bachillerato transiten al nivel Técnico Superior de la misma especialidad cumpliendo un (1) año adicional de formación superior."
+  },
+  {
+    "question": "¿Cuántas veces puede un estudiante solicitar un traspaso de instituto?",
+    "options": [
+      "El estudiante podrá solicitar traspaso por una sola vez",
+      "Dos veces",
+      "Tres veces",
+      "No hay límite de traspasos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 45, parágrafo III, el estudiante podrá solicitar traspaso por una sola vez."
+  },
+  {
+    "question": "¿Qué porcentaje de becas sociales deben otorgar los institutos privados?",
+    "options": [
+      "Deben poner a disposición del Ministerio de Educación becas equivalentes al 5% del número total de estudiantes nuevos inscritos",
+      "3%",
+      "10%",
+      "8%"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 49 establece que deben poner a disposición del Ministerio de Educación becas equivalentes al 5% del número total de estudiantes nuevos inscritos."
+  },
+  {
+    "question": "¿Qué incompatibilidad laboral existe para el personal Directivo y Administrativo?",
+    "options": [
+      "El personal debe cumplir funciones a tiempo completo y dedicación exclusiva, siendo incompatible con cargos similares en entidades públicas o privadas",
+      "Pueden tener otro empleo",
+      "Pueden tener dedicación parcial",
+      "No hay incompatibilidad"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 53, el personal debe cumplir funciones a tiempo completo y dedicación exclusiva, siendo incompatible con cargos similares en entidades públicas o privadas."
+  },
+  {
+    "question": "¿Cuál es la carga horaria docente a tiempo completo en área urbana y dispersa?",
+    "options": [
+      "De 72 a 80 horas en área urbana, y de 72 a 88 horas en área dispersa para el régimen anual",
+      "80 horas en ambas áreas",
+      "72 horas en ambas áreas",
+      "60 horas en urbana y 72 en dispersa"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 54 fija de 72 a 80 horas en área urbana, y de 72 a 88 horas en área dispersa para el régimen anual."
+  },
+  {
+    "question": "¿Qué requisitos de formación profesional debe cumplir un Rector de un instituto artístico?",
+    "options": [
+      "Debe contar con Título Profesional a nivel Técnico Superior o Licenciatura relacionado con los programas del instituto, o Título de Maestro/a de las Artes otorgado por el Ministerio de Educación",
+      "Solo Licenciatura",
+      "Solo Título de Maestro de Artes",
+      "No se requiere título específico"
+    ],
+    "correct": 0,
+    "explanation": "Conforme al Artículo 56, debe contar con Título Profesional a nivel Técnico Superior o Licenciatura relacionado con los programas del instituto, o Título de Maestro/a de las Artes otorgado por el Ministerio de Educación."
+  },
+  {
+    "question": "¿Cómo se acredita la pertinencia para docentes con formación empírica?",
+    "options": [
+      "Deben respaldar su experiencia con programas, notas de prensa, discos, videos y otros documentos que avalen su trayectoria en la especialidad",
+      "Solo con certificados de trabajo",
+      "Solo con referencias personales",
+      "No se acepta formación empírica"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 56, parágrafo IV, deben respaldar su experiencia con programas, notas de prensa, discos, videos y otros documentos que avalen su trayectoria en la especialidad."
+  },
+  {
+    "question": "¿Cuál es la vigencia de la Resolución Ministerial para CECA's y IFA's privados?",
+    "options": [
+      "Establece una vigencia de 5 años para CECA's, mientras que para IFA's privados establece 6 años",
+      "5 años para ambos",
+      "6 años para ambos",
+      "4 años para CECA's y 6 para IFA's"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 67 establece una vigencia de 5 años para CECA's, mientras que el Artículo 75 establece 6 años para IFA's privados."
+  },
+  {
+    "question": "¿Con cuánto tiempo de antelación debe iniciarse el trámite de Ratificación de Funcionamiento?",
+    "options": [
+      "El plazo límite es de sesenta (60) días calendario previos a su vencimiento",
+      "30 días",
+      "90 días",
+      "45 días"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 76 indica que el plazo límite es de sesenta (60) días calendario previos a su vencimiento."
+  },
+  {
+    "question": "¿En qué casos procede el cierre de un centro o instituto artístico privado?",
+    "options": [
+      "Procede por: a) Cierre voluntario, b) Cierre por inactividad, o c) Cierre por sanción",
+      "Solo por cierre voluntario",
+      "Solo por sanción",
+      "Solo por inactividad"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 87, procede por: a) Cierre voluntario, b) Cierre por inactividad, o c) Cierre por sanción."
+  },
+  {
+    "question": "¿Se puede transferir una Resolución Ministerial de funcionamiento mediante compra-venta?",
+    "options": [
+      "No, se prohíbe terminantemente que la Resolución Ministerial sea transferida a terceras personas en calidad de compra-venta",
+      "Sí, con autorización del Ministerio",
+      "Sí, si es a otro instituto",
+      "Depende del tipo de instituto"
+    ],
+    "correct": 0,
+    "explanation": "No. El Artículo 86, parágrafo IV, prohíbe terminantemente que la Resolución Ministerial sea transferida a terceras personas en calidad de compra-venta."
+  },
+  {
+    "question": "¿Qué estándares mínimos debe cumplir la infraestructura de los institutos?",
+    "options": [
+      "Debe cumplir con estándares académicos, de seguridad y ambientales mínimos de acuerdo a la oferta curricular técnica tecnológica",
+      "Solo estándares de seguridad",
+      "Solo estándares académicos",
+      "No hay estándares definidos"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 109 indica que debe cumplir con estándares académicos, de seguridad y ambientales mínimos de acuerdo a la oferta curricular técnica tecnológica."
+  },
+  {
+    "question": "¿Qué aspectos deben verificarse en las Visitas de Seguimiento de las Direcciones Departamentales?",
+    "options": [
+      "Deben verificar el RITT, condiciones pedagógicas, contratos de personal, carpetas de estudiantes, registros estadísticos y centralizadores de calificaciones",
+      "Solo el RITT",
+      "Solo carpetas de estudiantes",
+      "Solo registros estadísticos"
+    ],
+    "correct": 0,
+    "explanation": "Según el Artículo 114, deben verificar el RITT, condiciones pedagógicas, contratos de personal, carpetas de estudiantes, registros estadísticos y centralizadores de calificaciones."
+  },
+  {
+    "question": "¿Qué es el SII y cuál es su finalidad?",
+    "options": [
+      "Es el Sistema de Información de Institutos, implementado para contar con información oportuna y confiable que permita diseñar políticas para la formación superior artística",
+      "Es un sistema de control de asistencia",
+      "Es un sistema de gestión académica",
+      "Es un sistema de registro de estudiantes"
+    ],
+    "correct": 0,
+    "explanation": "De acuerdo al Artículo 116, es el Sistema de Información de Institutos, implementado para contar con información oportuna y confiable que permita diseñar políticas para la formación superior artística."
+  },
+  {
+    "question": "¿Qué obligación tienen los institutos respecto al registro RUDE de los estudiantes?",
+    "options": [
+      "Obliga a los institutos a registrar a los estudiantes inscritos en el Sistema de Información para otorgarles un número de registro RUDE para su seguimiento académico",
+      "No tienen obligación de registrar estudiantes",
+      "Solo deben registrar a los estudiantes nuevos",
+      "Solo deben registrar a los egresados"
+    ],
+    "correct": 0,
+    "explanation": "El Artículo 116, parágrafo III, obliga a los institutos a registrar a los estudiantes inscritos en el Sistema de Información para otorgarles un número de registro RUDE para su seguimiento académico."
+  }
+];
+
+        // Variables del juego
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 60;
+        let selectedQuestions = [];
+        let userAnswers = Array(20).fill(null);
+        let gameActive = false;
+
+        // Elementos del DOM
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-btn');
+        const endBtn = document.getElementById('end-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const timerDisplay = document.getElementById('timer');
+        const currentQuestionDisplay = document.getElementById('current-question');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const progressFill = document.getElementById('progress-fill');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const totalAnsweredDisplay = document.getElementById('total-answered');
+        const correctAnswersDisplay = document.getElementById('correct-answers');
+        const incorrectAnswersDisplay = document.getElementById('incorrect-answers');
+        const unansweredDisplay = document.getElementById('unanswered');
+        const percentageDisplay = document.getElementById('percentage');
+
+        // Inicializar eventos
+        startBtn.addEventListener('click', startGame);
+        endBtn.addEventListener('click', endGame);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartGame);
+
+        // Función para iniciar el juego
+        function startGame() {
+            // Seleccionar 20 preguntas aleatorias del banco
+            selectedQuestions = [...questionBank]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 20);
+            
+            // Reiniciar variables
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = Array(20).fill(null);
+            
+            // Cambiar pantallas
+            startScreen.classList.remove('active-screen');
+            gameScreen.classList.add('active-screen');
+            resultsScreen.classList.remove('active-screen');
+            
+            // Iniciar primera pregunta
+            loadQuestion();
+            gameActive = true;
+        }
+
+        // Función para cargar una pregunta
+        function loadQuestion() {
+            // Reiniciar temporizador
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            // Detener temporizador anterior si existe
+            if (timer) clearInterval(timer);
+            
+            // Iniciar nuevo temporizador
+            timer = setInterval(updateTimer, 1000);
+            
+            // Actualizar indicadores
+            currentQuestionDisplay.textContent = currentQuestionIndex + 1;
+            currentScoreDisplay.textContent = score;
+            progressFill.style.width = `${(currentQuestionIndex / 20) * 100}%`;
+            
+            // Cargar pregunta actual
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            questionText.innerHTML = currentQuestion.question;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            const optionLetters = ['A', 'B', 'C', 'D'];
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.innerHTML = `
+                    <div class="option-letter">${optionLetters[index]}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                
+                // Si ya había una respuesta seleccionada para esta pregunta
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                    
+                    // Si ya se mostró la respuesta correcta
+                    if (userAnswers[currentQuestionIndex] !== null && !gameActive) {
+                        if (index === currentQuestion.correct) {
+                            optionElement.classList.add('correct');
+                        } else {
+                            optionElement.classList.add('incorrect');
+                        }
+                    }
+                }
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Limpiar retroalimentación
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+            
+            // Deshabilitar siguiente pregunta hasta que se responda
+            nextBtn.disabled = true;
+            
+            // Si ya había una respuesta para esta pregunta
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback();
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Función para seleccionar una opción
+        function selectOption(optionIndex) {
+            if (!gameActive) return;
+            
+            // Desmarcar todas las opciones
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Marcar la opción seleccionada
+            const selectedOption = document.querySelectorAll('.option')[optionIndex];
+            selectedOption.classList.add('selected');
+            
+            // Guardar respuesta del usuario
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Mostrar retroalimentación
+            showFeedback();
+            
+            // Habilitar siguiente pregunta
+            nextBtn.disabled = false;
+        }
+
+        // Función para mostrar retroalimentación
+        function showFeedback() {
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            
+            // Marcar respuesta correcta e incorrecta
+            document.querySelectorAll('.option').forEach((option, index) => {
+                if (index === currentQuestion.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && index !== currentQuestion.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar mensaje de retroalimentación
+            if (userAnswer === currentQuestion.correct) {
+                feedback.textContent = `¡Correcto! ${currentQuestion.explanation}`;
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                
+                // Incrementar puntuación si es la primera vez que responde correctamente
+                if (gameActive) {
+                    score += 5;
+                    currentScoreDisplay.textContent = score;
+                }
+            } else {
+                feedback.textContent = `Incorrecto. La respuesta correcta es: ${currentQuestion.options[currentQuestion.correct]}. ${currentQuestion.explanation}`;
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+            }
+            
+            feedback.style.display = 'block';
+            
+            // Detener el juego para esta pregunta
+            gameActive = false;
+            clearInterval(timer);
+        }
+
+        // Función para actualizar el temporizador
+        function updateTimer() {
+            timeLeft--;
+            updateTimerDisplay();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                
+                // Si no se ha respondido, marcar como no respondida
+                if (userAnswers[currentQuestionIndex] === null) {
+                    userAnswers[currentQuestionIndex] = -1; // -1 significa no respondida
+                    showFeedback();
+                    nextBtn.disabled = false;
+                }
+            }
+        }
+
+        // Función para actualizar la visualización del temporizador
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Cambiar color cuando quede poco tiempo
+            if (timeLeft <= 10) {
+                timerDisplay.style.color = '#e53935';
+            } else {
+                timerDisplay.style.color = '#283593';
+            }
+        }
+
+        // Función para ir a la siguiente pregunta
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < 20) {
+                gameActive = true;
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // Función para terminar el juego
+        function endGame() {
+            clearInterval(timer);
+            
+            // Cambiar a pantalla de resultados
+            gameScreen.classList.remove('active-screen');
+            resultsScreen.classList.add('active-screen');
+            
+            // Calcular resultados
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+            
+            for (let i = 0; i < 20; i++) {
+                if (userAnswers[i] === null || userAnswers[i] === -1) {
+                    unansweredCount++;
+                } else if (userAnswers[i] === selectedQuestions[i].correct) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+            }
+            
+            // Actualizar puntuación final (5 puntos por respuesta correcta)
+            const finalScore = correctCount * 5;
+            
+            // Actualizar elementos de resultados
+            finalScoreDisplay.textContent = finalScore;
+            totalAnsweredDisplay.textContent = `${20 - unansweredCount}/20`;
+            correctAnswersDisplay.textContent = correctCount;
+            incorrectAnswersDisplay.textContent = incorrectCount;
+            unansweredDisplay.textContent = unansweredCount;
+            
+            const percentage = ((correctCount / 20) * 100).toFixed(1);
+            percentageDisplay.textContent = `${percentage}%`;
+        }
+
+        // Función para reiniciar el juego
+        function restartGame() {
+            startScreen.classList.add('active-screen');
+            resultsScreen.classList.remove('active-screen');
+            gameScreen.classList.remove('active-screen');
+        }
+
+        // Inicializar MathJax para renderizar LaTeX
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+</body>
+</html>
