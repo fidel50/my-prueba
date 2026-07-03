@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Escalafon Nacional - ESFM</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #283593, #3949ab);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active-screen {
+            display: block;
+        }
+        
+        #start-screen {
+            text-align: center;
+        }
+        
+        .start-info {
+            margin-bottom: 40px;
+        }
+        
+        .start-info h2 {
+            color: #283593;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .start-info ul {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            list-style-position: inside;
+        }
+        
+        .start-info li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #3949ab, #283593);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        #game-screen {
+            position: relative;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .timer-container {
+            background-color: #f5f5f5;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #283593;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #timer {
+            color: #e53935;
+            font-weight: 800;
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 30px;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .question-container {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-text {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #212121;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #3949ab;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.selected {
+            border-color: #3949ab;
+            background-color: #e8eaf6;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+        
+        .option-letter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .feedback {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .feedback.correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-left: 5px solid #4caf50;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+            border-left: 5px solid #f44336;
+            display: block;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #757575, #616161);
+        }
+        
+        #results-screen {
+            text-align: center;
+        }
+        
+        .results-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3949ab, #283593);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-value {
+            font-size: 60px;
+            font-weight: 800;
+            line-height: 1;
+        }
+        
+        .score-label {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .results-details {
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #283593;
+        }
+        
+        .highlight {
+            color: #283593;
+            font-weight: 700;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #757575;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación sobre Reglamento Escalafon Nacional</h1>
+            <p>Preparación para Ascenso de Categoria 2026</p>
+        </div>
+        
+        <div class="content">
+            <!-- Pantalla de inicio -->
+            <div id="start-screen" class="screen active-screen">
+                <div class="start-info">
+                    <h2>Instrucciones de la evaluación</h2>
+                    <p>Esta evaluación consta de 20 preguntas sobre el Reglamento Escalafon Nacional seleccionadas aleatoriamente de un banco de 100 preguntas.</p>
+                    
+                    <ul>
+                        <li>Tendrás <span class="highlight">1 minuto por pregunta</span> para responder.</li>
+                        <li>Debes seleccionar una de las cuatro opciones de respuesta.</li>
+                        <li>Se mostrará retroalimentación inmediata después de seleccionar una respuesta.</li>
+                        <li>Al finalizar las 20 preguntas, verás tu puntuación final.</li>
+                        <li>Esta evaluación está diseñada para preparar al Ascenso de Categoria 2026.</li>
+                    </ul>
+                    
+                    <p>¡Buena suerte!</p>
+                </div>
+                <button id="start-btn" class="btn">Iniciar Evaluación</button>
+            </div>
+            
+            <!-- Pantalla de juego -->
+            <div id="game-screen" class="screen">
+                <div class="game-header">
+                    <div class="timer-container">
+                        Tiempo: <span id="timer">01:00</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-text">
+                            <span>Pregunta <span id="current-question">1</span> de 20</span>
+                            <span>Puntaje: <span id="current-score">0</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <button id="end-btn" class="btn btn-secondary">Terminar Prueba</button>
+                </div>
+                
+                <div class="question-container">
+                    <div id="question-text" class="question-text"></div>
+                </div>
+                
+                <div id="options-container" class="options-container"></div>
+                
+                <div id="feedback" class="feedback"></div>
+                
+                <div class="navigation-buttons">
+                    <button id="next-btn" class="btn" disabled>Siguiente Pregunta</button>
+                </div>
+            </div>
+            
+            <!-- Pantalla de resultados -->
+            <div id="results-screen" class="screen">
+                <div class="results-container">
+                    <h2 style="color: #283593; margin-bottom: 30px; font-size: 28px;">Resultados de la Evaluación</h2>
+                    
+                    <div class="score-circle">
+                        <div id="final-score" class="score-value">0</div>
+                        <div class="score-label">Puntos</div>
+                    </div>
+                    
+                    <div class="results-details">
+                        <div class="result-item">
+                            <span class="result-label">Preguntas respondidas:</span>
+                            <span id="total-answered" class="result-value">0/20</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas correctas:</span>
+                            <span id="correct-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Respuestas incorrectas:</span>
+                            <span id="incorrect-answers" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Preguntas sin responder:</span>
+                            <span id="unanswered" class="result-value">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Porcentaje de acierto:</span>
+                            <span id="percentage" class="result-value">0%</span>
+                        </div>
+                    </div>
+                    
+                    <button id="restart-btn" class="btn">Reiniciar Evaluación</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Evaluación Para Ascenso de Categoria | 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Banco de 100 preguntas de escalafon nacional para la ESFM
+        const questionBank = [
+  {
+    "question": "¿Cuál es el número de Decreto Supremo y la fecha exacta en la que se puso en vigencia el actual Reglamento del Escalafón Nacional?",
+    "options": [
+      "Decreto Supremo No. 04688, promulgado el 18 de julio de 1957",
+      "Decreto Supremo No. 04689, promulgado el 18 de julio de 1957",
+      "Decreto Supremo No. 04688, promulgado el 19 de julio de 1957",
+      "Decreto Supremo No. 04687, promulgado el 18 de julio de 1957"
+    ],
+    "correct": 0,
+    "explanation": "Se trata del Decreto Supremo No. 04688, promulgado el 18 de julio de 1957 durante la presidencia del Dr. Hernán Siles Zuazo."
+  },
+  {
+    "question": "¿Cuál fue el motivo principal expresado en los 'Considerandos' para la aprobación de este reglamento en 1957?",
+    "options": [
+      "El reglamento anterior de 1936 había resultado anacrónico frente a las transformaciones económico-sociales del país y no se adaptaba a las modernas corrientes de la educación",
+      "El reglamento anterior de 1940 no cumplía con los estándares internacionales",
+      "Se necesitaba un reglamento para unificar los sueldos de los maestros",
+      "El gobierno deseaba centralizar el control educativo en el Ministerio"
+    ],
+    "correct": 0,
+    "explanation": "El motivo fue que el reglamento anterior de 1936 había resultado anacrónico frente a las transformaciones económico-sociales del país y no se adaptaba a las modernas corrientes de la educación."
+  },
+  {
+    "question": "Según el Artículo 1° del D.S. No. 04688, ¿cómo se define técnicamente el Escalafón Nacional del Servicio de Educación?",
+    "options": [
+      "El registro sistemático, permanente y centralizado de los datos personales y profesionales referentes a los maestros y funcionarios del servicio educativo",
+      "El listado anual de maestros con sus respectivos sueldos",
+      "El conjunto de normas para la contratación de personal docente",
+      "El archivo de expedientes de los maestros jubilados"
+    ],
+    "correct": 0,
+    "explanation": "Se define como el registro sistemático, permanente y centralizado de los datos personales y profesionales referentes a los maestros y funcionarios del servicio educativo."
+  },
+  {
+    "question": "¿Cuáles son las cuatro finalidades principales que cumple el Escalafón Nacional según el Artículo 2°?",
+    "options": [
+      "Regular el ingreso y continuidad de los funcionarios, establecer las escalas de categoría y jerarquía, determinar las normas de promoción y ascenso, y valorar los méritos y antigüedad para estimular la preparación eficiente",
+      "Controlar la asistencia, pagar sueldos, organizar concursos y capacitar docentes",
+      "Establecer el currículo nacional, asignar plazas, evaluar aprendizajes y administrar recursos",
+      "Seleccionar directores, supervisar escuelas, gestionar infraestructura y otorgar becas"
+    ],
+    "correct": 0,
+    "explanation": "Sus finalidades son regular el ingreso y continuidad de los funcionarios, establecer las escalas de categoría y jerarquía, determinar las normas de promoción y ascenso, y valorar los méritos y antigüedad para estimular la preparación eficiente."
+  },
+  {
+    "question": "¿Qué organismo es la Agencia Central encargada de atender el Escalafón Nacional bajo la dependencia del Ministerio de Educación?",
+    "options": [
+      "Departamento de Estadística y Personal",
+      "Departamento de Planificación Educativa",
+      "Oficina de Recursos Humanos",
+      "Unidad de Escalafón del Ministerio"
+    ],
+    "correct": 0,
+    "explanation": "La instancia encargada es el Departamento de Estadística y Personal."
+  },
+  {
+    "question": "¿Cuál es la función del Departamento de Estadística y Personal respecto al registro de datos de los maestros?",
+    "options": [
+      "Organizar el kardex centralizando los datos de todo el país, inscribir al personal en el libro del Escalafón, disponer promociones anuales y recopilar listas nacionales de cambios de destino y ascensos",
+      "Solo organizar el kardex y las listas de ascensos",
+      "Mantener un archivo físico de todos los maestros sin actualización",
+      "Realizar únicamente la inscripción inicial de los maestros normalistas"
+    ],
+    "correct": 0,
+    "explanation": "Debe organizar el kardex centralizando los datos de todo el país, inscribir al personal en el libro del Escalafón, disponer promociones anuales y recopilar listas nacionales de cambios de destino y ascensos."
+  },
+  {
+    "question": "¿Cómo se integra la Comisión Nacional del Escalafón para la provisión de calificaciones?",
+    "options": [
+      "Jefe del Departamento de Estadística y Personal, Jefe del Escalafón del Ministerio de Educación y un delegado de la Federación Nacional de Maestros Urbanos",
+      "Director General de Educación, Inspector Nacional y un representante sindical",
+      "Ministro de Educación, Viceministro y el Jefe de Personal",
+      "Presidente de la República, Ministro y un delegado del magisterio"
+    ],
+    "correct": 0,
+    "explanation": "Está integrada por el Jefe del Departamento de Estadística y Personal, el Jefe del Escalafón del Ministerio de Educación y un delegado de la Federación Nacional de Maestros Urbanos."
+  },
+  {
+    "question": "¿Qué facultad tiene la Comisión Nacional respecto a las reclamaciones de los maestros?",
+    "options": [
+      "Conocer las reclamaciones referentes a la calificación de servicios y revisar los expedientes ya calificados por las comisiones distritales",
+      "Solo atender quejas de tipo administrativo",
+      "Revisar únicamente los expedientes de los maestros normalistas",
+      "Emitir resoluciones vinculantes sin posibilidad de apelación"
+    ],
+    "correct": 0,
+    "explanation": "Tiene la facultad de conocer las reclamaciones referentes a la calificación de servicios y revisar los expedientes ya calificados por las comisiones distritales."
+  },
+  {
+    "question": "¿Cómo se dividen los sectores del Servicio de Educación según el Artículo 4° del D.S. No. 04688?",
+    "options": [
+      "Docente y administrativo",
+      "Primario, secundario y superior",
+      "Público y privado",
+      "Urbano y rural"
+    ],
+    "correct": 0,
+    "explanation": "Se divide en dos sectores: el docente, encargado del sistema educativo en todos sus ciclos y áreas, y el administrativo, encargado de las funciones no docentes en las reparticiones del ramo."
+  },
+  {
+    "question": "¿Cuáles son los tres requisitos básicos para ingresar al sector docente y ejercer el magisterio fiscal?",
+    "options": [
+      "Ser boliviano (o extranjero contratado con capacidad comprobada), acreditar capacidad para el cargo y tener una edad entre 18 y 50 años",
+      "Ser boliviano, tener título universitario y no tener antecedentes penales",
+      "Tener mayoría de edad, ser normalista y aprobar examen de ingreso",
+      "Ser egresado de escuela normal, tener 5 años de experiencia y estar inscrito en el escalafón"
+    ],
+    "correct": 0,
+    "explanation": "Se requiere ser boliviano (o extranjero contratado con capacidad comprobada), acreditar capacidad para el cargo y tener una edad entre 18 y 50 años."
+  },
+  {
+    "question": "¿Qué clases de maestros se reconocen en mérito a su grado de preparación y experiencia profesional?",
+    "options": [
+      "Normalistas, titulares e interinos",
+      "Primaria, secundaria y superior",
+      "Fiscales, particulares y comunitarios",
+      "Rurales, urbanos y fronterizos"
+    ],
+    "correct": 0,
+    "explanation": "El reglamento reconoce tres clases: normalistas, titulares e interinos."
+  },
+  {
+    "question": "¿Quiénes son considerados maestros normalistas según el Artículo 8° del D.S. No. 04688?",
+    "options": [
+      "Aquellos que han seguido el curso regular de formación pedagógica en escuelas o institutos normales del Estado y poseen un certificado profesional habilitante",
+      "Los que han trabajado como interinos durante más de 5 años",
+      "Los que poseen título universitario y han aprobado un examen de idoneidad",
+      "Los que son egresados de institutos normales privados"
+    ],
+    "correct": 0,
+    "explanation": "Son aquellos que han seguido el curso regular de formación pedagógica en escuelas o institutos normales del Estado y poseen un certificado profesional habilitante."
+  },
+  {
+    "question": "¿Bajo qué condiciones se admite el ingreso de maestros interinos al servicio docente?",
+    "options": [
+      "De forma provisional por razones de emergencia ante la falta de personal capacitado, siempre que aprueben un examen de capacidad y posean grados mínimos de instrucción según el ciclo",
+      "Pueden ingresar sin examen si hay necesidad, pero solo por un año",
+      "Solo pueden ser contratados en zonas rurales y con autorización del Ministerio",
+      "Deben tener al menos 10 años de experiencia en el extranjero"
+    ],
+    "correct": 0,
+    "explanation": "Se admiten de forma provisional por razones de emergencia ante la falta de personal capacitado, siempre que aprueben un examen de capacidad y posean grados mínimos de instrucción según el ciclo."
+  },
+  {
+    "question": "¿Cuál es el requisito de instrucción mínimo para que un interino enseñe en el ciclo primario y en el secundario?",
+    "options": [
+      "Primario: Diploma de Bachiller; Secundario o superior: Título Universitario",
+      "Primario: Título de Normalista; Secundario: Título de Licenciado",
+      "Primario: 6 años de escolaridad; Secundario: 10 años de escolaridad",
+      "Primario: Certificado de competencia; Secundario: Examen de suficiencia"
+    ],
+    "correct": 0,
+    "explanation": "Para el ciclo primario se requiere el Diploma de Bachiller y para el secundario o superior se requiere un Título Universitario."
+  },
+  {
+    "question": "¿Cómo puede un maestro interino convertirse en 'maestro titular'?",
+    "options": [
+      "Cumplir 10 años de servicios docentes y aprobar un examen de capacidad para obtener el título mediante Resolución Suprema que determine su incorporación definitiva",
+      "Cumplir 5 años y solicitar la titularidad automática",
+      "Aprobar un curso de actualización y presentar una solicitud al Ministerio",
+      "Trabajar 15 años en el magisterio y obtener el respaldo del sindicato"
+    ],
+    "correct": 0,
+    "explanation": "Debe cumplir 10 años de servicios docentes y aprobar un examen de capacidad para obtener el título mediante Resolución Suprema que determine su incorporación definitiva."
+  },
+  {
+    "question": "¿Qué impedimentos existen para ser admitido en el ejercicio de la docencia según el Artículo 11° del D.S. No. 04688?",
+    "options": [
+      "Padecer enfermedades graves, tener más de 60 años, llevar una vida notoriamente inmoral o tener sentencia ejecutoriada por delitos penales",
+      "No tener título normalista, no ser boliviano o tener menos de 18 años",
+      "Tener deudas con el Estado, tener procesos judiciales en curso o no tener domicilio fijo",
+      "No acreditar experiencia previa, no tener referencias o ser mayor de 55 años"
+    ],
+    "correct": 0,
+    "explanation": "No pueden ser admitidos quienes padezcan enfermedades graves, tengan más de 60 años, lleven una vida notoriamente inmoral o tengan sentencia ejecutoriada por delitos penales."
+  },
+  {
+    "question": "¿Cuál es la consecuencia de no estar inscrito en el Escalafón según el Artículo 12° del D.S. No. 04688?",
+    "options": [
+      "No se puede gozar de las garantías, derechos y recompensas (como los beneficios económicos de categoría) que el reglamento otorga al personal de carrera",
+      "No se puede ejercer la docencia en ningún establecimiento fiscal",
+      "Se pierde automáticamente el cargo",
+      "No se puede participar en concursos de ascenso"
+    ],
+    "correct": 0,
+    "explanation": "La inscripción es un requisito obligatorio para gozar de las garantías, derechos y recompensas (como los beneficios económicos de categoría) que el reglamento otorga al personal de carrera."
+  },
+  {
+    "question": "¿Qué documentos personales deben presentar los maestros normalistas para su inscripción inicial?",
+    "options": [
+      "Certificado de nacimiento o fe de bautismo, documentos de estado civil, situación militar y sus títulos profesionales o de formación pedagógica",
+      "Solo el título profesional y el carnet de identidad",
+      "Certificado de antecedentes penales, certificado médico y constancia de domicilio",
+      "Diploma de bachiller, currículum vitae y carta de recomendación"
+    ],
+    "correct": 0,
+    "explanation": "Deben presentar certificado de nacimiento o fe de bautismo, documentos de estado civil, situación militar y sus títulos profesionales o de formación pedagógica."
+  },
+  {
+    "question": "¿A partir de cuántos años de servicio tienen opción a inscribirse en el Escalafón los maestros interinos?",
+    "options": [
+      "Después de cumplir cinco años de servicio satisfactorio y tras aprobar un examen de idoneidad",
+      "Después de 10 años de servicio",
+      "Después de 3 años de servicio",
+      "Al cumplir 8 años de servicio"
+    ],
+    "correct": 0,
+    "explanation": "Tienen la opción después de cumplir cinco años de servicio satisfactorio y tras aprobar un examen de idoneidad."
+  },
+  {
+    "question": "¿Qué sucede si un maestro titular reprueba por segunda vez el examen de capacidad a los 10 años de servicio?",
+    "options": [
+      "Quedará privado de las garantías que el Reglamento del Escalafón reconoce en favor del magisterio",
+      "Será destituido automáticamente",
+      "Podrá rendir el examen una tercera vez después de 5 años",
+      "Será reubicado en un cargo administrativo"
+    ],
+    "correct": 0,
+    "explanation": "Quedará privado de las garantías que el Reglamento del Escalafón reconoce en favor del magisterio."
+  },
+  {
+    "question": "¿Bajo qué condiciones los funcionarios administrativos pueden inscribirse en el Escalafón?",
+    "options": [
+      "Tras cinco años de servicios, presentando su documentación personal y profesional, y aprobando un examen de idoneidad para la carrera administrativa",
+      "Automáticamente después de 3 años de servicio en el Ministerio",
+      "Con solo presentar una solicitud y el título profesional",
+      "Después de 10 años de servicio y aprobar un examen de competencia"
+    ],
+    "correct": 0,
+    "explanation": "Pueden hacerlo tras cinco años de servicios, presentando su documentación personal y profesional, y aprobando un examen de idoneidad para la carrera administrativa."
+  },
+  {
+    "question": "¿Qué requisito debe cumplir un funcionario administrativo con más de 10 años de servicio que decide pasar a funciones docentes?",
+    "options": [
+      "Someterse obligatoriamente a los exámenes exigidos para maestros interinos y titulares para mantener su categoría",
+      "Solo necesita una carta de autorización del Ministerio",
+      "Puede conservar su categoría automáticamente por su antigüedad",
+      "Debe renunciar a su cargo administrativo y comenzar desde cero"
+    ],
+    "correct": 0,
+    "explanation": "Para mantener su categoría, debe someterse obligatoriamente a los exámenes exigidos para maestros interinos y titulares."
+  },
+  {
+    "question": "¿En qué dos proyecciones complementarias se desarrolla la carrera docente y administrativa?",
+    "options": [
+      "Ascensos de jerarquía (por necesidades del servicio y méritos) y promociones de categoría (por antigüedad en el servicio)",
+      "Ascensos horizontales y verticales",
+      "Promociones por antigüedad y por evaluación de desempeño",
+      "Concursos de méritos y exámenes de oposición"
+    ],
+    "correct": 0,
+    "explanation": "Se desarrolla mediante los ascensos de jerarquía (por necesidades del servicio y méritos) y las promociones de categoría (por antigüedad en el servicio)."
+  },
+  {
+    "question": "¿Cuántas promociones de categoría establece el reglamento para recompensar el tiempo de servicio?",
+    "options": [
+      "Cinco promociones",
+      "Tres promociones",
+      "Siete promociones",
+      "Diez promociones"
+    ],
+    "correct": 0,
+    "explanation": "Se establece una escala de cinco promociones de categoría tanto para el personal docente como para el administrativo."
+  },
+  {
+    "question": "Según el Artículo 20°, ¿cuál es el rango máximo y cuál es el rango base en la escala jerárquica docente?",
+    "options": [
+      "Máximo: Director General de Educación; Base: profesores de escuelas nocturnas y de alfabetización",
+      "Máximo: Viceministro de Educación; Base: maestros interinos",
+      "Máximo: Jefe de Distrito; Base: maestros rurales",
+      "Máximo: Rector de Universidad; Base: auxiliares de docencia"
+    ],
+    "correct": 0,
+    "explanation": "El rango máximo es el de Director General de Educación y el rango base lo componen los profesores de escuelas nocturnas y de alfabetización."
+  },
+  {
+    "question": "¿Cuál es el rango jerárquico más alto en el sector administrativo según el Artículo 21°?",
+    "options": [
+      "Oficial Mayor del Ministerio de Educación",
+      "Director General de Educación",
+      "Secretario General del Ministerio",
+      "Jefe de Recursos Humanos"
+    ],
+    "correct": 0,
+    "explanation": "El rango máximo en la escala jerárquica administrativa corresponde al Oficial Mayor del Ministerio de Educación."
+  },
+  {
+    "question": "¿Qué cargos ocupan los niveles inferiores (incisos i y j) de la escala jerárquica administrativa?",
+    "options": [
+      "Porteros, seguidos por sirvientes y mensajeros",
+      "Auxiliares administrativos y secretarios",
+      "Asistentes y ordenanzas",
+      "Técnicos y supervisores"
+    ],
+    "correct": 0,
+    "explanation": "Los niveles finales de la escala están ocupados por los porteros, seguidos por los sirvientes y mensajeros."
+  },
+  {
+    "question": "Según el Artículo 22°, ¿cómo se definen los ascensos para los cargos de directores de unidades educativas?",
+    "options": [
+      "Deben ser determinados obligatoriamente mediante concurso de méritos y examen de competencia",
+      "Se designan por antigüedad automática",
+      "Son nombrados directamente por el Ministerio",
+      "Se eligen por votación del personal de la escuela"
+    ],
+    "correct": 0,
+    "explanation": "Los ascensos a las direcciones deben ser determinados obligatoriamente mediante concurso de méritos y examen de competencia."
+  },
+  {
+    "question": "¿Quién es la autoridad encargada de registrar y calificar inicialmente los méritos de cada maestro?",
+    "options": [
+      "La autoridad inmediata superior y posteriormente revisados por las Juntas Calificadoras Distritales",
+      "El Director Departamental de Educación",
+      "El Jefe de Personal del Ministerio",
+      "La Comisión Nacional del Escalafón"
+    ],
+    "correct": 0,
+    "explanation": "Los méritos son registrados y calificados en una ficha por la autoridad inmediata superior y posteriormente revisados por las Juntas Calificadoras Distritales."
+  },
+  {
+    "question": "¿Cuáles son los cinco aspectos fundamentales que componen la valoración cuantitativa de los méritos del maestro?",
+    "options": [
+      "a) Estudios y títulos profesionales, b) Condiciones personales y docentes, c) Tiempo de servicios, d) Méritos generales y e) Deméritos",
+      "a) Asistencia, b) Puntualidad, c) Disciplina, d) Capacitación, e) Investigación",
+      "a) Evaluación de aula, b) Participación en proyectos, c) Publicaciones, d) Antigüedad, e) Sanciones",
+      "a) Títulos, b) Experiencia, c) Idiomas, d) Publicaciones, e) Referencias"
+    ],
+    "correct": 0,
+    "explanation": "La valoración se divide en: a) Estudios y títulos profesionales, b) Condiciones personales y docentes, c) Tiempo de servicios, d) Méritos generales y e) Deméritos."
+  },
+  {
+    "question": "¿Cuántos puntos otorga el reglamento por la sola inscripción en el Escalafón y cuántos por el examen de titular por antigüedad?",
+    "options": [
+      "5 puntos por inscripción y 10 puntos por examen de titular",
+      "10 puntos por inscripción y 5 puntos por examen",
+      "5 puntos por inscripción y 15 puntos por examen",
+      "10 puntos por inscripción y 10 puntos por examen"
+    ],
+    "correct": 0,
+    "explanation": "Otorga 5 puntos por la inscripción en el escalafón y 10 puntos por aprobar el examen de titular por antigüedad."
+  },
+  {
+    "question": "¿Qué puntaje se asigna a un maestro que posee títulos universitarios adicionales como el de médico, abogado o ingeniero?",
+    "options": [
+      "10 puntos por cada título de nivel universitario adicional",
+      "5 puntos por cada título adicional",
+      "15 puntos por cada título adicional",
+      "20 puntos por cada título adicional"
+    ],
+    "correct": 0,
+    "explanation": "Se asignan 10 puntos por cada título de nivel universitario que posea el profesional."
+  },
+  {
+    "question": "¿Cuál es la diferencia de puntaje asignada entre los maestros normalistas rurales y los de primaria/secundaria?",
+    "options": [
+      "Normalistas rurales: 10 puntos; primaria/secundaria: 20 puntos",
+      "Normalistas rurales: 15 puntos; primaria/secundaria: 25 puntos",
+      "Normalistas rurales: 5 puntos; primaria/secundaria: 15 puntos",
+      "Normalistas rurales: 20 puntos; primaria/secundaria: 30 puntos"
+    ],
+    "correct": 0,
+    "explanation": "A los normalistas rurales se les asignan 10 puntos, mientras que a los de primaria y secundaria se les asignan 20 puntos."
+  },
+  {
+    "question": "¿Qué puntaje máximo se puede obtener por poseer el grado de Doctor en Pedagogía?",
+    "options": [
+      "20 puntos",
+      "15 puntos",
+      "10 puntos",
+      "25 puntos"
+    ],
+    "correct": 0,
+    "explanation": "El grado de Doctor en Pedagogía se califica con el puntaje máximo de 20 puntos en el rubro de títulos."
+  },
+  {
+    "question": "Dentro de las 'Condiciones Personales', ¿qué aspectos se evalúan para otorgar hasta 10 puntos en el inciso a)?",
+    "options": [
+      "Asistencia, puntualidad y disciplina en el cumplimiento de los deberes docentes",
+      "Presentación personal, trato con los alumnos y uso de materiales",
+      "Participación en reuniones, colaboración con la dirección y trabajo en equipo",
+      "Horas de clase dictadas, número de alumnos y resultados académicos"
+    ],
+    "correct": 0,
+    "explanation": "Se evalúa la asistencia, la puntualidad y la disciplina en el cumplimiento de los deberes docentes."
+  },
+  {
+    "question": "¿Qué reconocimiento se otorga a los docentes que realizan alfabetización voluntaria y no remunerada?",
+    "options": [
+      "5 puntos por cada 10 sujetos alfabetizados, hasta un máximo de 20 puntos",
+      "2 puntos por cada 5 sujetos, hasta 10 puntos",
+      "10 puntos por cada 20 sujetos, sin máximo",
+      "1 punto por cada sujeto, hasta 30 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Se otorgan 5 puntos por cada 10 sujetos alfabetizados, pudiendo acumular hasta un máximo de 20 puntos."
+  },
+  {
+    "question": "¿Cuál es la unidad de medida y el puntaje para calificar el tiempo de servicios según el Artículo 27° del D.S. No. 04688?",
+    "options": [
+      "1 punto por cada trimestre de trabajo realizado",
+      "1 punto por cada año de trabajo",
+      "2 puntos por cada semestre de trabajo",
+      "0.5 puntos por cada mes de trabajo"
+    ],
+    "correct": 0,
+    "explanation": "El tiempo de servicios se califica asignando 1 punto por cada trimestre de trabajo realizado."
+  },
+  {
+    "question": "¿Qué beneficio especial de cómputo de tiempo tienen los maestros que estuvieron en la Guerra del Chaco?",
+    "options": [
+      "El tiempo de permanencia en la zona de operaciones se computa como doble tiempo de servicios para fines de jubilación",
+      "Se les otorga una bonificación adicional del 20% sobre el haber básico",
+      "Reciben un puntaje extra de 10 puntos en la ficha de méritos",
+      "Tienen derecho a una jubilación anticipada a los 55 años"
+    ],
+    "correct": 0,
+    "explanation": "El tiempo de permanencia en la zona de operaciones de la Guerra del Chaco se computa como doble tiempo de servicios para fines de jubilación."
+  },
+  {
+    "question": "¿Qué ventaja en antigüedad obtienen los maestros normalistas (no oriundos del lugar) que sirven en zonas fronterizas?",
+    "options": [
+      "Si prestan 2 años de servicio, tienen derecho al cómputo de 4 años de antigüedad para fines de jubilación, méritos y categoría",
+      "Se les otorga un 50% más de antigüedad",
+      "Reciben un bono anual por zona fronteriza",
+      "Pueden ascender un año antes en la escala jerárquica"
+    ],
+    "correct": 0,
+    "explanation": "Si prestan 2 años de servicio en zonas fronterizas, tienen derecho al cómputo de 4 años de antigüedad para fines de jubilación, méritos y categoría."
+  },
+  {
+    "question": "¿Se consideran válidos los años de servicios prestados en países extranjeros para la calificación de servicios en Bolivia?",
+    "options": [
+      "No, el Artículo 31° establece expresamente que los años de servicios prestados a países extranjeros no se computan para fines de jubilación ni de calificación de servicios",
+      "Sí, siempre que sean convalidados por el Ministerio",
+      "Solo si son en países latinoamericanos",
+      "Sí, pero solo para la categorización, no para jubilación"
+    ],
+    "correct": 0,
+    "explanation": "No, el Artículo 31° establece expresamente que los años de servicios prestados a países extranjeros no se computan para fines de jubilación ni de calificación de servicios."
+  },
+  {
+    "question": "¿Cuál es el puntaje máximo asignado a la publicación de libros editados o inéditos sobre temas pedagógicos?",
+    "options": [
+      "De 1 a 2 puntos por libro, hasta un máximo de 20 puntos",
+      "5 puntos por libro, sin máximo",
+      "10 puntos por libro, hasta un máximo de 30 puntos",
+      "2 puntos por libro, hasta un máximo de 10 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Se asignan de 1 a 2 puntos por cada libro, hasta alcanzar un máximo de 20 puntos."
+  },
+  {
+    "question": "¿En qué cinco áreas se clasifican los 'deméritos' del personal docente?",
+    "options": [
+      "1) Faltas de asistencia, 2) Faltas de comportamiento, 3) Faltas de rendimiento, 4) Abusos contra los alumnos y 5) Fallos en procesos escolares",
+      "1) Inasistencias, 2) Retrasos, 3) Malas calificaciones, 4) Quejas de padres y 5) Desobediencia",
+      "1) Problemas de disciplina, 2) Bajo rendimiento académico, 3) Abandono de tareas, 4) Conflictos con colegas y 5) Mala planificación",
+      "1) Faltas leves, 2) Faltas graves, 3) Faltas muy graves, 4) Faltas disciplinarias y 5) Faltas penales"
+    ],
+    "correct": 0,
+    "explanation": "Los deméritos se juzgan en relación a: 1) Faltas de asistencia, 2) Faltas de comportamiento, 3) Faltas de rendimiento, 4) Abusos contra los alumnos y 5) Fallos en procesos escolares."
+  },
+  {
+    "question": "¿Cuál es la sanción en puntos por el abandono de funciones?",
+    "options": [
+      "De 1 a 20 puntos",
+      "De 10 a 30 puntos",
+      "De 5 a 15 puntos",
+      "De 20 a 40 puntos"
+    ],
+    "correct": 0,
+    "explanation": "El abandono de funciones conlleva una sanción o demérito de 1 a 20 puntos."
+  },
+  {
+    "question": "¿Cómo se sanciona en el escalafón que un docente tenga más del 30% de alumnos reprobados en su curso?",
+    "options": [
+      "Se considera una falta de rendimiento y se sanciona con una resta de 1 a 5 puntos",
+      "Se sanciona con 10 puntos de demérito",
+      "No tiene sanción, solo una llamada de atención",
+      "Se le descuenta 2 puntos por cada reprobado"
+    ],
+    "correct": 0,
+    "explanation": "Se considera una falta de rendimiento y se sanciona con una resta de 1 a 5 puntos."
+  },
+  {
+    "question": "¿Qué puntaje de demérito se aplica por el uso de castigos corporales y vejaciones graves contra los alumnos?",
+    "options": [
+      "Resta de 1 a 20 puntos",
+      "Resta de 5 a 15 puntos",
+      "Resta de 10 a 30 puntos",
+      "Resta de 20 a 40 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Esta acción se sanciona con una resta de 1 a 20 puntos en la ficha de calificación."
+  },
+  {
+    "question": "¿En cuántos ejemplares debe ser anotada la ficha de calificación anual y a dónde se destinan?",
+    "options": [
+      "Tres ejemplares: dos para la Comisión Calificadora Distrital (uno de los cuales se entrega al interesado) y el tercero se remite al Departamento de Personal del Ministerio de Educación",
+      "Dos ejemplares: uno para el maestro y otro para el director",
+      "Cuatro ejemplares: uno para cada instancia (maestro, distrito, departamental, nacional)",
+      "Un ejemplar único que se archiva en el distrito"
+    ],
+    "correct": 0,
+    "explanation": "Se anota en tres ejemplares: dos para la Comisión Calificadora Distrital (uno de los cuales se entrega al interesado) y el tercero se remite al Departamento de Personal del Ministerio de Educación."
+  },
+  {
+    "question": "¿Qué sucede si un maestro está disconforme con la valoración de sus méritos en la ficha de calificación?",
+    "options": [
+      "Puede solicitar la revisión del caso ante las Comisiones Calificadoras Distritales y, en última instancia, apelar ante la Comisión Nacional",
+      "Debe aceptar la calificación sin posibilidad de reclamo",
+      "Puede apelar directamente al Ministerio de Educación",
+      "Solo puede presentar un recurso de reposición ante el Director de Distrito"
+    ],
+    "correct": 0,
+    "explanation": "Puede solicitar la revisión del caso ante las Comisiones Calificadoras Distritales y, en última instancia, apelar ante la Comisión Nacional."
+  },
+  {
+    "question": "¿Cuál es el porcentaje de bonificación económica que recibe un docente al alcanzar la 1ra Categoría?",
+    "options": [
+      "100% sobre el haber básico del cargo desempeñado",
+      "80% sobre el haber básico",
+      "120% sobre el haber básico",
+      "50% sobre el haber básico"
+    ],
+    "correct": 0,
+    "explanation": "Al alcanzar la 1ra categoría, el docente recibe una bonificación del 100% sobre el haber básico del cargo desempeñado."
+  },
+  {
+    "question": "¿A partir de qué momento los maestros normalistas tienen derecho a percibir la bonificación de 5ta categoría?",
+    "options": [
+      "Desde el mismo momento de su iniciación en la carrera docente",
+      "Después de 2 años de servicio",
+      "Después de 5 años de servicio",
+      "Al obtener el título de maestro titular"
+    ],
+    "correct": 0,
+    "explanation": "Tienen derecho a percibir el 30% correspondiente a la 5ta categoría desde el mismo momento de su iniciación en la carrera docente."
+  },
+  {
+    "question": "¿Cuál es el tiempo de servicio total requerido para que un maestro interino o administrativo llegue a la 1ra categoría?",
+    "options": [
+      "25 años de servicio, ascendiendo cada 5 años",
+      "20 años de servicio, ascendiendo cada 4 años",
+      "30 años de servicio, ascendiendo cada 6 años",
+      "15 años de servicio, ascendiendo cada 3 años"
+    ],
+    "correct": 0,
+    "explanation": "Deben cumplir 25 años de servicio para alcanzar la 1ra categoría, ascendiendo cada 5 años."
+  },
+  {
+    "question": "¿Cuál es el objetivo de establecer exámenes voluntarios para la promoción de categoría según el Artículo 40° del D.S. No. 04688?",
+    "options": [
+      "Estimular la mejor preparación profesional del magisterio permitiendo abreviar el proceso de promociones de categoría mediante la aprobación de dichas pruebas",
+      "Aumentar el nivel de exigencia para obtener ascensos",
+      "Reducir el tiempo de servicio necesario para cada categoría",
+      "Premiar a los maestros con mayor antigüedad"
+    ],
+    "correct": 0,
+    "explanation": "El objetivo es estimular la mejor preparación profesional del magisterio permitiendo abreviar el proceso de promociones de categoría mediante la aprobación de dichas pruebas."
+  },
+  {
+    "question": "¿A los cuántos años de servicio puede un maestro normalista rendir examen para ascender a la 1ra categoría?",
+    "options": [
+      "16 años de servicio",
+      "15 años de servicio",
+      "18 años de servicio",
+      "20 años de servicio"
+    ],
+    "correct": 0,
+    "explanation": "Un maestro normalista tiene la opción de rendir el examen para la 1ra categoría al cumplir los 16 años de servicio."
+  },
+  {
+    "question": "¿Qué organismo es el encargado de atender y calificar los exámenes voluntarios de promoción de categoría?",
+    "options": [
+      "Instituto de Investigaciones Pedagógicas, siguiendo el calendario de la Dirección General de Educación",
+      "Departamento de Estadística y Personal",
+      "Comisión Nacional del Escalafón",
+      "Dirección de Formación Docente"
+    ],
+    "correct": 0,
+    "explanation": "Estos exámenes son atendidos por el Instituto de Investigaciones Pedagógicas, siguiendo el calendario de la Dirección General de Educación."
+  },
+  {
+    "question": "¿Qué sucede si un postulante no logra aprobar el examen voluntario de promoción de categoría?",
+    "options": [
+      "Mantiene su derecho a ser promovido por el cómputo regular de antigüedad en el servicio",
+      "Pierde toda posibilidad de ascenso en esa categoría",
+      "Puede rendir el examen nuevamente al año siguiente sin penalización",
+      "Es automáticamente ascendido por antigüedad, pero sin bonificación"
+    ],
+    "correct": 0,
+    "explanation": "Los postulantes reprobados mantienen su derecho a ser promovidos por el cómputo regular de antigüedad en el servicio."
+  },
+  {
+    "question": "¿Qué sanción establece el reglamento para los maestros interinos que por negligencia no rindan la prueba de idoneidad tras 6 años de servicio?",
+    "options": [
+      "Quedarán inhabilitados para el ejercicio de la docencia",
+      "Serán suspendidos por un año",
+      "Serán multados con el 50% de su salario",
+      "Perderán su categoría y serán reubicados como auxiliares"
+    ],
+    "correct": 0,
+    "explanation": "Quedarán inhabilitados para el ejercicio de la docencia."
+  },
+  {
+    "question": "¿Cuál es la consecuencia para un maestro interino que, teniendo 11 años de servicio, no ha sido declarado titular por su propia negligencia?",
+    "options": [
+      "Queda inhabilitado para ejercer el magisterio",
+      "Es obligado a jubilarse",
+      "Pierde el derecho a categoría",
+      "Se le reduce el salario"
+    ],
+    "correct": 0,
+    "explanation": "Al igual que en el caso anterior, queda inhabilitado para ejercer el magisterio."
+  },
+  {
+    "question": "¿Cuál es la función principal de la Comisión Nacional del Escalafón respecto a las calificaciones distritales?",
+    "options": [
+      "Actúa como Tribunal de Apelación y posee facultades revisoras y supervisoras sobre las calificaciones de servicios docentes efectuadas por las comisiones distritales",
+      "Solo revisa las calificaciones de los maestros normalistas",
+      "Emite calificaciones directas sin intervención de las distritales",
+      "Coordina con el Ministerio para la publicación de resultados"
+    ],
+    "correct": 0,
+    "explanation": "Actúa como Tribunal de Apelación y posee facultades revisoras y supervisoras sobre las calificaciones de servicios docentes efectuadas por las comisiones distritales."
+  },
+  {
+    "question": "¿Cómo está constituida una Comisión Calificadora Distrital según el Artículo 47° del D.S. No. 04688?",
+    "options": [
+      "Jefe de Distrito Escolar o de Zona (Presidente), Inspector de Ciclo (Secretario) y un representante sindical acreditado por la Federación respectiva (Vocal)",
+      "Director Departamental, Supervisor y un delegado del Ministerio",
+      "Director de la unidad educativa, un maestro de primaria y un maestro de secundaria",
+      "Presidente de la Junta Escolar, Secretario de Actas y un veedor social"
+    ],
+    "correct": 0,
+    "explanation": "Está constituida por el Jefe de Distrito Escolar o de Zona (como Presidente), el Inspector de Ciclo (como Secretario) y un representante sindical acreditado por la Federación respectiva (como Vocal)."
+  },
+  {
+    "question": "¿Qué responsabilidad civil y penal tienen los miembros de las Comisiones Distritales según el Artículo 49° del D.S. No. 04688?",
+    "options": [
+      "Son responsables por cualquier violación al reglamento, incluyendo calificaciones o pagos indebidos, siendo pasibles de sanciones penales y de la obligación de reponer al Estado lo pagado indebidamente",
+      "Solo son responsables administrativamente, no penalmente",
+      "Deben responder con su patrimonio solo en caso de dolo",
+      "No tienen responsabilidad, ya que actúan como órganos colegiados"
+    ],
+    "correct": 0,
+    "explanation": "Son responsables por cualquier violación al reglamento, incluyendo calificaciones o pagos indebidos, siendo pasibles de sanciones penales y de la obligación de reponer al Estado lo pagado indebidamente."
+  },
+  {
+    "question": "¿De cuánto tiempo dispone un maestro para apelar una calificación de méritos que considera inexacta?",
+    "options": [
+      "10 días a partir de su notificación",
+      "15 días a partir de su notificación",
+      "5 días hábiles",
+      "30 días a partir de la publicación"
+    ],
+    "correct": 0,
+    "explanation": "Dispone de un término de 10 días a partir de su notificación para apelar ante la Comisión Nacional."
+  },
+  {
+    "question": "¿Qué condiciones de tiempo de servicio y puntaje de méritos se requieren para ser Director de Escuela?",
+    "options": [
+      "Título de formación pedagógica en el ciclo, capacidad directiva, no menos de 5 años de servicio y un mínimo de 100 puntos de méritos",
+      "Título universitario, 10 años de servicio y 150 puntos",
+      "Normalista, 8 años de servicio y 120 puntos",
+      "Cualquier título, 5 años de servicio y 80 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Se requiere poseer título de formación pedagógica en el ciclo, capacidad directiva, no menos de 5 años de servicio y un mínimo de 100 puntos de méritos."
+  },
+  {
+    "question": "¿Cuáles son los requisitos para optar al cargo de Inspector de Distrito?",
+    "options": [
+      "Poseer formación pedagógica, haber ejercido previamente como director, tener al menos 8 años de servicio y no menos de 120 puntos de méritos",
+      "Título de normalista, 10 años de servicio y 150 puntos",
+      "Ser director con 5 años de antigüedad y 100 puntos",
+      "Título universitario, 8 años de servicio y 110 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Se debe poseer formación pedagógica, haber ejercido previamente como director, tener al menos 8 años de servicio y no menos de 120 puntos de méritos."
+  },
+  {
+    "question": "¿Qué exigencias adicionales de puntaje y antigüedad establece el reglamento para ser Jefe de Distrito?",
+    "options": [
+      "Formación pedagógica, haber sido director, mínimo de 8 años de servicio y alcanzar al menos 150 puntos de méritos",
+      "Formación pedagógica, 10 años de servicio y 160 puntos",
+      "Título de normalista, 8 años de servicio y 140 puntos",
+      "Ser inspector, 5 años de servicio y 130 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Exige poseer formación pedagógica, haber sido director, tener un mínimo de 8 años de servicio y alcanzar al menos 150 puntos de méritos."
+  },
+  {
+    "question": "¿Qué requisitos debe cumplir un profesional para ser Director General de Educación o Director Nacional?",
+    "options": [
+      "Poseer formación pedagógica superior, haber desempeñado cargos jerárquicos previos, tener no menos de 15 años de servicio y un mínimo de 200 puntos de méritos",
+      "Título de Doctor en Pedagogía, 20 años de servicio y 250 puntos",
+      "Ser Jefe de Distrito durante 5 años, 15 años de servicio y 180 puntos",
+      "Título universitario, 15 años de servicio y 220 puntos"
+    ],
+    "correct": 0,
+    "explanation": "Debe poseer formación pedagógica superior, haber desempeñado cargos jerárquicos previos, tener no menos de 15 años de servicio y un mínimo de 200 puntos de méritos."
+  },
+  {
+    "question": "Además de los años de servicio y puntos, ¿qué cualidad moral es 'muy especialmente' requerida para los cargos superiores?",
+    "options": [
+      "El ascendiente y la autoridad moral de la que deben gozar los candidatos ante las bases del magisterio",
+      "Poseer una conducta intachable en el hogar",
+      "Ser miembro activo de una organización religiosa",
+      "Tener una amplia red de contactos políticos"
+    ],
+    "correct": 0,
+    "explanation": "Se requiere el ascendiente y la autoridad moral de la que deben gozar los candidatos ante las bases del magisterio."
+  },
+  {
+    "question": "¿Cómo se define el destino de un cargo directivo cuando existen dos o más postulantes en vacancia?",
+    "options": [
+      "Mediante un concurso que verifique idoneidad (título), antigüedad y los méritos acreditados en la ficha de calificación",
+      "Por sorteo entre los postulantes",
+      "Por designación directa del Ministerio",
+      "Por votación de los maestros del distrito"
+    ],
+    "correct": 0,
+    "explanation": "La designación se define mediante un concurso que verifique idoneidad (título), antigüedad y los méritos acreditados en la ficha de calificación."
+  },
+  {
+    "question": "¿Quién preside el Tribunal encargado de calificar los concursos de méritos y exámenes de competencia?",
+    "options": [
+      "Un delegado de la Dirección General de Educación",
+      "El Jefe de Distrito",
+      "El Director Departamental de Educación",
+      "Un representante de la Federación de Maestros"
+    ],
+    "correct": 0,
+    "explanation": "El Tribunal es presidido por un delegado de la Dirección General de Educación."
+  },
+  {
+    "question": "¿Qué derecho tienen los postulantes si se infringen las normas del reglamento en la provisión de cargos?",
+    "options": [
+      "Derecho a la reclamación y queja, pudiendo solicitar la gestión de las Federaciones Sindicales para que se apliquen correctamente los preceptos legales",
+      "Derecho a impugnar el concurso ante el Poder Judicial",
+      "Derecho a solicitar la nulidad del concurso",
+      "Solo pueden presentar un reclamo ante el Director General"
+    ],
+    "correct": 0,
+    "explanation": "Tienen derecho a la reclamación y queja, pudiendo solicitar la gestión de las Federaciones Sindicales para que se apliquen correctamente los preceptos legales."
+  },
+  {
+    "question": "¿En qué consiste técnicamente la 'acumulación de cargos docentes'?",
+    "options": [
+      "Desempeño de un cargo principal y de otro cargo docente adicional, ya sea este un curso completo o un número determinado de horas excedentes",
+      "Tener dos cargos de tiempo completo en diferentes escuelas",
+      "Dictar clases en más de una asignatura en el mismo establecimiento",
+      "Ser docente y director al mismo tiempo"
+    ],
+    "correct": 0,
+    "explanation": "Consiste en el desempeño de un cargo principal y de otro cargo docente adicional, ya sea este un curso completo o un número determinado de horas excedentes."
+  },
+  {
+    "question": "¿Bajo qué condición única pueden concederse acumulaciones de cargos?",
+    "options": [
+      "Cuando no existan maestros normalistas o titulares sin colocación (desempleados) dentro del mismo ciclo o especialidad",
+      "Cuando el docente tenga más de 10 años de servicio",
+      "Cuando sea autorizado por el Director Departamental",
+      "Solo en zonas rurales o de difícil acceso"
+    ],
+    "correct": 0,
+    "explanation": "Solo pueden concederse cuando no existan maestros normalistas o titulares sin colocación (desempleados) dentro del mismo ciclo o especialidad."
+  },
+  {
+    "question": "¿Cuántas horas semanales puede acumular un profesor de secundaria que se encuentra en la Primera Categoría?",
+    "options": [
+      "Hasta 10 horas semanales además de su cargo principal",
+      "Hasta 8 horas semanales",
+      "Hasta 12 horas semanales",
+      "Hasta 6 horas semanales"
+    ],
+    "correct": 0,
+    "explanation": "Puede acumular hasta 10 horas semanales además de su cargo principal."
+  },
+  {
+    "question": "¿Cuál es el límite de horas de acumulación para un profesor de secundaria en Cuarta Categoría?",
+    "options": [
+      "Hasta 4 horas semanales adicionales a su cargo principal",
+      "Hasta 6 horas semanales",
+      "Hasta 8 horas semanales",
+      "Hasta 2 horas semanales"
+    ],
+    "correct": 0,
+    "explanation": "El límite es de hasta 4 horas semanales adicionales a su cargo principal."
+  },
+  {
+    "question": "¿Qué restricción de acumulación tienen los profesores de Institutos Normales que ganan igual o más que un Director de Secundaria?",
+    "options": [
+      "Solo pueden acumular horas disponibles dentro del mismo establecimiento donde trabajan, siendo incompatible la acumulación en otros centros del sistema fiscal",
+      "No pueden acumular ninguna hora adicional",
+      "Pueden acumular hasta 2 horas en otras instituciones",
+      "Pueden acumular siempre que sea en la misma ciudad"
+    ],
+    "correct": 0,
+    "explanation": "Solo pueden acumular horas disponibles dentro del mismo establecimiento donde trabajan, siendo incompatible la acumulación en otros centros del sistema fiscal."
+  },
+  {
+    "question": "¿Qué regla establece el Artículo 64° del D.S. No. 04688, para evitar la dispersión de la labor docente en un mismo curso?",
+    "options": [
+      "En ningún caso, un mismo curso en una misma asignatura podrá ser atendido por más de un profesor",
+      "Cada curso debe ser atendido por al menos dos profesores",
+      "Las asignaturas principales deben ser dictadas por un solo profesor, pero las complementarias pueden ser compartidas",
+      "Se permite hasta tres profesores por curso en casos excepcionales"
+    ],
+    "correct": 0,
+    "explanation": "Establece que, en ningún caso, un mismo curso en una misma asignatura podrá ser atendido por más de un profesor."
+  },
+  {
+    "question": "¿A partir de qué categoría los maestros de primaria pueden acumular un cargo en escuelas nocturnas?",
+    "options": [
+      "Desde la tercera categoría, siempre que el cargo adicional sea en escuelas nocturnas o centros de alfabetización y que no ambos cargos sean directivos",
+      "Desde la segunda categoría",
+      "Desde la cuarta categoría",
+      "Desde la primera categoría"
+    ],
+    "correct": 0,
+    "explanation": "Pueden hacerlo desde la tercera categoría, siempre que el cargo adicional sea en escuelas nocturnas o centros de alfabetización y que no ambos cargos sean directivos."
+  },
+  {
+    "question": "¿En qué consiste el principio de inamovilidad docente según el Artículo 73°?",
+    "options": [
+      "Los maestros inscritos en el Escalafón no pueden ser destituidos ni suspendidos en el ejercicio de sus funciones, garantizando su estabilidad laboral siempre que cumplan con sus deberes",
+      "Los maestros no pueden ser trasladados de distrito sin su consentimiento",
+      "Los maestros tienen derecho a permanecer en el mismo cargo hasta la jubilación",
+      "La inamovilidad solo aplica a los maestros titulares"
+    ],
+    "correct": 0,
+    "explanation": "Establece que los maestros inscritos en el Escalafón no pueden ser destituidos ni suspendidos en el ejercicio de sus funciones, garantizando su estabilidad laboral siempre que cumplan con sus deberes."
+  },
+  {
+    "question": "¿Cuáles son las únicas tres causas por las que un maestro puede ser destituido o suspendido previa sentencia?",
+    "options": [
+      "Comisión de actos inmorales, actos indisciplinarios o actos delictuosos, siempre mediante un proceso previo que reconozca el derecho a la defensa",
+      "Bajo rendimiento académico, ausentismo y mala conducta",
+      "Incumplimiento de horarios, falta de respeto a superiores y negligencia en el trabajo",
+      "Abandono de funciones, maltrato a alumnos y desacato a autoridades"
+    ],
+    "correct": 0,
+    "explanation": "Las únicas causas son la comisión de actos inmorales, actos indisciplinarios o actos delictuosos, siempre mediante un proceso previo que reconozca el derecho a la defensa."
+  },
+  {
+    "question": "¿Qué derecho económico tienen los maestros que quedan cesantes sin culpabilidad de su parte?",
+    "options": [
+      "Percibir el 100% del haber del cargo que desempeñaban hasta que sean restituidos en funciones de un rango similar",
+      "Recibir una indemnización equivalente a 3 meses de sueldo",
+      "Tener prioridad en los concursos de reincorporación",
+      "Percibir el 80% de su haber durante 6 meses"
+    ],
+    "correct": 0,
+    "explanation": "Tienen derecho a percibir el 100% del haber del cargo que desempeñaban hasta que sean restituidos en funciones de un rango similar."
+  },
+  {
+    "question": "¿Cuál es el plazo máximo establecido para restituir en sus funciones a un maestro cesante sin culpabilidad?",
+    "options": [
+      "90 días",
+      "60 días",
+      "120 días",
+      "180 días"
+    ],
+    "correct": 0,
+    "explanation": "El reglamento establece un plazo máximo de 90 días para que el maestro sea restituido en su cargo o uno del mismo rango."
+  },
+  {
+    "question": "¿A qué edad es obligatorio que los maestros se acojan al beneficio de la jubilación?",
+    "options": [
+      "60 años, salvo casos excepcionales debidamente justificados",
+      "55 años",
+      "65 años",
+      "58 años"
+    ],
+    "correct": 0,
+    "explanation": "La jubilación es obligatoria al cumplir los 60 años de edad, salvo casos excepcionales debidamente justificados."
+  },
+  {
+    "question": "¿Qué sucede con los maestros que son condenados a pena corporal por delitos comunes?",
+    "options": [
+      "Son sujetos de retiro del servicio activo por 'causas culpables', perdiendo su derecho a la inamovilidad en la función docente",
+      "Son suspendidos temporalmente hasta cumplir la condena",
+      "Pueden reincorporarse al término de la condena",
+      "Mantienen su derecho a la inamovilidad"
+    ],
+    "correct": 0,
+    "explanation": "Son sujetos de retiro del servicio activo por 'causas culpables', perdiendo su derecho a la inamovilidad en la función docente."
+  },
+  {
+    "question": "¿Mediante qué documentos se acredita oficialmente el tiempo de servicios en la educación fiscal?",
+    "options": [
+      "Certificados expedidos por la Contraloría u otras oficinas pagadoras del Estado",
+      "Certificados de trabajo emitidos por la Dirección del establecimiento",
+      "Declaración jurada del interesado",
+      "Constancias de la Junta de Personal"
+    ],
+    "correct": 0,
+    "explanation": "Se acredita mediante certificados expedidos por la Contraloría u otras oficinas pagadoras del Estado."
+  },
+  {
+    "question": "¿Cómo se comprueban los servicios prestados en planteles urbanos sostenidos por instituciones religiosas o empresas?",
+    "options": [
+      "Mediante certificados expedidos por los Directores, Gerentes o Administradores de dichas instituciones",
+      "Con constancias del Ministerio de Educación",
+      "Mediante actas notariales",
+      "Con un informe del Inspector de Zona"
+    ],
+    "correct": 0,
+    "explanation": "Se comprueban mediante certificados expedidos por los Directores, Gerentes o Administradores de dichas instituciones."
+  },
+  {
+    "question": "¿Quién debe acreditar los servicios prestados en las escuelas rurales particulares o de comunidades campesinas?",
+    "options": [
+      "Los Inspectores Escolares de Distrito o de Zona correspondientes",
+      "Los propios directores de las escuelas rurales",
+      "El líder de la comunidad",
+      "La Junta Escolar de la comunidad"
+    ],
+    "correct": 0,
+    "explanation": "Deben ser acreditados por los Inspectores Escolares de Distrito o de Zona correspondientes."
+  },
+  {
+    "question": "¿Qué autoridad debe dictar el auto de legalización para que el tiempo de servicios sea reconocido por Resolución Suprema?",
+    "options": [
+      "El Jefe del Distrito, tras la revisión efectuada por el Inspector del Ciclo",
+      "El Director General de Educación",
+      "El Ministro de Educación",
+      "El Departamento de Estadística y Personal"
+    ],
+    "correct": 0,
+    "explanation": "El Jefe del Distrito es la autoridad encargada de dictar el auto de legalización tras la revisión efectuada por el Inspector del Ciclo."
+  },
+  {
+    "question": "¿Las asignaciones por categoría forman parte del haber para fines de beneficios sociales?",
+    "options": [
+      "Sí, son parte integrante del haber y se toman en cuenta para la jubilación, aguinaldo y todos los beneficios sociales",
+      "No, solo el sueldo básico cuenta para beneficios",
+      "Sí, pero solo para la jubilación, no para el aguinaldo",
+      "No, solo se consideran para el cálculo de la categoría"
+    ],
+    "correct": 0,
+    "explanation": "Sí, según el Artículo 78°, las asignaciones por categoría son parte integrante del haber y se toman en cuenta para la jubilación, aguinaldo y todos los beneficios sociales."
+  },
+  {
+    "question": "¿Es válido el tiempo de servicio administrativo para la categorización de un maestro normalista?",
+    "options": [
+      "Sí, los servicios prestados por maestros normalistas en cargos administrativos del ramo de educación son válidos para el cómputo de antigüedad, categorización y jubilación",
+      "No, solo se considera el tiempo en funciones docentes",
+      "Sí, pero solo para la jubilación, no para categorización",
+      "No, el tiempo administrativo se computa por separado"
+    ],
+    "correct": 0,
+    "explanation": "Sí, los servicios prestados por maestros normalistas en cargos administrativos del ramo de educación son válidos para el cómputo de antigüedad, categorización y jubilación."
+  },
+  {
+    "question": "¿Cuántos años deben servir obligatoriamente los egresados de Escuelas Normales Rurales en el área campesina?",
+    "options": [
+      "Cinco años",
+      "Tres años",
+      "Cuatro años",
+      "Seis años"
+    ],
+    "correct": 0,
+    "explanation": "Deben servir, cuando menos, durante cinco años en las escuelas campesinas."
+  },
+  {
+    "question": "¿Qué requisito deben cumplir los maestros normalistas rurales para pasar al servicio urbano?",
+    "options": [
+      "Aprobar previamente los dos últimos cursos de las escuelas normales urbanas para obtener el título correspondiente",
+      "Cumplir 10 años de servicio rural",
+      "Rendir un examen de revalidación",
+      "Solicitar autorización al Ministerio"
+    ],
+    "correct": 0,
+    "explanation": "Deben aprobar previamente los dos últimos cursos de las escuelas normales urbanas para obtener el título correspondiente."
+  },
+  {
+    "question": "¿De cuánto tiempo disponen los maestros normalistas para recabar su Título y Visación tras su egreso?",
+    "options": [
+      "2 años; de no hacerlo, no podrán ascender de categoría",
+      "1 año",
+      "3 años",
+      "6 meses"
+    ],
+    "correct": 0,
+    "explanation": "Disponen de un término de 2 años; de no hacerlo, no podrán ascender de categoría."
+  },
+  {
+    "question": "¿Qué beneficio económico es irrenunciable para los maestros normalistas desde su inicio en la carrera?",
+    "options": [
+      "Percibir la asignación correspondiente a la quinta categoría (30%) desde su iniciación y no pueden ser privados de ella por ningún motivo",
+      "Bonificación por antigüedad de 10% anual",
+      "Aguinaldo completo desde el primer año",
+      "Acceso a una vivienda fiscal"
+    ],
+    "correct": 0,
+    "explanation": "Tienen derecho a percibir la asignación correspondiente a la quinta categoría (30%) desde su iniciación y no pueden ser privados de ella por ningún motivo."
+  },
+  {
+    "question": "¿Qué obligación tienen los funcionarios de otros servicios que pasan a depender del Ministerio de Educación?",
+    "options": [
+      "Inscribirse en el Escalafón para tener derecho al cómputo de antigüedad, méritos y beneficios de categoría",
+      "Solicitar un cambio de régimen laboral",
+      "Renunciar a su antigüedad anterior",
+      "Aprobar un examen de ingreso al magisterio"
+    ],
+    "correct": 0,
+    "explanation": "Están obligados a inscribirse en el Escalafón para tener derecho al cómputo de antigüedad, méritos y beneficios de categoría."
+  },
+  {
+    "question": "¿Qué tipos de servicios son los únicos tomados en cuenta para la categorización docente y administrativa?",
+    "options": [
+      "Única y exclusivamente los servicios prestados en el ramo de Educación",
+      "Servicios en el sector público en general",
+      "Servicios en cualquier institución educativa, pública o privada",
+      "Servicios docentes en cualquier país"
+    ],
+    "correct": 0,
+    "explanation": "Se toman en cuenta única y exclusivamente los servicios prestados en el ramo de Educación."
+  },
+  {
+    "question": "¿Qué sucedió con los maestros que ya estaban categorizados antes de la vigencia de este reglamento?",
+    "options": [
+      "Se les reconoció la categoría que ya gozaban, a excepción de los normalistas con menos de 5 años, quienes pasaron a percibir el porcentaje de la 5ta categoría",
+      "Perdieron su categoría y debieron reiniciar el proceso",
+      "Se les reasignó una categoría provisional",
+      "Mantuvieron su categoría pero sin bonificación"
+    ],
+    "correct": 0,
+    "explanation": "Se les reconoció la categoría que ya gozaban, a excepción de los normalistas con menos de 5 años, quienes pasaron a percibir el porcentaje de la 5ta categoría."
+  },
+  {
+    "question": "¿En qué momento el puntaje de méritos se convierte en un factor necesario para la promoción de categoría?",
+    "options": [
+      "Una vez concluida la calificación de méritos del personal en todo el país, según la escala que establezca el Ministerio",
+      "A partir de la tercera promoción de categoría",
+      "Solo para los ascensos de jerarquía",
+      "Desde la primera promoción de categoría"
+    ],
+    "correct": 0,
+    "explanation": "Se convierte en factor necesario una vez concluida la calificación de méritos del personal en todo el país, según la escala que establezca el Ministerio."
+  },
+  {
+    "question": "¿Quién es la autoridad encargada de la ejecución y cumplimiento de este Decreto Supremo?",
+    "options": [
+      "El Ministro de Estado en el Despacho de Educación y Bellas Artes",
+      "El Presidente de la República",
+      "El Director General de Educación",
+      "El Jefe del Departamento de Estadística y Personal"
+    ],
+    "correct": 0,
+    "explanation": "El Ministro de Estado en el Despacho de Educación y Bellas Artes."
+  },
+  {
+    "question": "¿Qué estatus legal tienen las disposiciones anteriores que sean contrarias a este Reglamento?",
+    "options": [
+      "Quedan expresamente derogadas todas las disposiciones contrarias al presente Reglamento",
+      "Se mantienen vigentes hasta que sean modificadas",
+      "Se derogan solo las que se opongan al Código de Educación",
+      "Quedan suspendidas temporalmente"
+    ],
+    "correct": 0,
+    "explanation": "Quedan expresamente derogadas todas las disposiciones contrarias al presente Reglamento."
+  },
+  {
+    "question": "¿Quién fue el Presidente de la República que firmó el Decreto Supremo 04688?",
+    "options": [
+      "Dr. Hernán Siles Zuazo",
+      "Dr. Víctor Paz Estenssoro",
+      "Dr. René Barrientos",
+      "Dr. Alfredo Ovando"
+    ],
+    "correct": 0,
+    "explanation": "El Dr. Hernán Siles Zuazo."
+  },
+  {
+    "question": "¿Cuál es la diferencia fundamental entre el ascenso de jerarquía y la promoción de categoría?",
+    "options": [
+      "El ascenso de jerarquía se da en función de las necesidades del servicio y méritos (cargos), mientras que la promoción de categoría depende de la antigüedad en el servicio (bonificación económica)",
+      "El ascenso de jerarquía es por antigüedad y la promoción por méritos",
+      "El ascenso de jerarquía es temporal y la promoción es definitiva",
+      "No hay diferencia, son términos intercambiables"
+    ],
+    "correct": 0,
+    "explanation": "El ascenso de jerarquía se da en función de las necesidades del servicio y méritos (cargos), mientras que la promoción de categoría depende de la antigüedad en el servicio (bonificación económica)."
+  },
+  {
+    "question": "¿A qué documento debe guardar conformidad el texto de este Reglamento según sus considerandos?",
+    "options": [
+      "Con las reformas introducidas por el Código de la Educación Boliviana",
+      "Con la Constitución Política del Estado",
+      "Con el Estatuto del Funcionario Público",
+      "Con la Ley de Servicio Civil"
+    ],
+    "correct": 0,
+    "explanation": "Debe guardar absoluta conformidad con las reformas introducidas por el Código de la Educación Boliviana."
+  }
+];
+
+        // Variables del juego
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 60;
+        let selectedQuestions = [];
+        let userAnswers = Array(20).fill(null);
+        let gameActive = false;
+
+        // Elementos del DOM
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-btn');
+        const endBtn = document.getElementById('end-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const timerDisplay = document.getElementById('timer');
+        const currentQuestionDisplay = document.getElementById('current-question');
+        const currentScoreDisplay = document.getElementById('current-score');
+        const progressFill = document.getElementById('progress-fill');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const totalAnsweredDisplay = document.getElementById('total-answered');
+        const correctAnswersDisplay = document.getElementById('correct-answers');
+        const incorrectAnswersDisplay = document.getElementById('incorrect-answers');
+        const unansweredDisplay = document.getElementById('unanswered');
+        const percentageDisplay = document.getElementById('percentage');
+
+        // Inicializar eventos
+        startBtn.addEventListener('click', startGame);
+        endBtn.addEventListener('click', endGame);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartGame);
+
+        // Función para iniciar el juego
+        function startGame() {
+            // Seleccionar 20 preguntas aleatorias del banco
+            selectedQuestions = [...questionBank]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 20);
+            
+            // Reiniciar variables
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = Array(20).fill(null);
+            
+            // Cambiar pantallas
+            startScreen.classList.remove('active-screen');
+            gameScreen.classList.add('active-screen');
+            resultsScreen.classList.remove('active-screen');
+            
+            // Iniciar primera pregunta
+            loadQuestion();
+            gameActive = true;
+        }
+
+        // Función para cargar una pregunta
+        function loadQuestion() {
+            // Reiniciar temporizador
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            // Detener temporizador anterior si existe
+            if (timer) clearInterval(timer);
+            
+            // Iniciar nuevo temporizador
+            timer = setInterval(updateTimer, 1000);
+            
+            // Actualizar indicadores
+            currentQuestionDisplay.textContent = currentQuestionIndex + 1;
+            currentScoreDisplay.textContent = score;
+            progressFill.style.width = `${(currentQuestionIndex / 20) * 100}%`;
+            
+            // Cargar pregunta actual
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            questionText.innerHTML = currentQuestion.question;
+            
+            // Limpiar opciones anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Crear nuevas opciones
+            const optionLetters = ['A', 'B', 'C', 'D'];
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.innerHTML = `
+                    <div class="option-letter">${optionLetters[index]}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => selectOption(index));
+                
+                // Si ya había una respuesta seleccionada para esta pregunta
+                if (userAnswers[currentQuestionIndex] === index) {
+                    optionElement.classList.add('selected');
+                    
+                    // Si ya se mostró la respuesta correcta
+                    if (userAnswers[currentQuestionIndex] !== null && !gameActive) {
+                        if (index === currentQuestion.correct) {
+                            optionElement.classList.add('correct');
+                        } else {
+                            optionElement.classList.add('incorrect');
+                        }
+                    }
+                }
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Limpiar retroalimentación
+            feedback.classList.remove('correct', 'incorrect');
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+            
+            // Deshabilitar siguiente pregunta hasta que se responda
+            nextBtn.disabled = true;
+            
+            // Si ya había una respuesta para esta pregunta
+            if (userAnswers[currentQuestionIndex] !== null) {
+                showFeedback();
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Función para seleccionar una opción
+        function selectOption(optionIndex) {
+            if (!gameActive) return;
+            
+            // Desmarcar todas las opciones
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Marcar la opción seleccionada
+            const selectedOption = document.querySelectorAll('.option')[optionIndex];
+            selectedOption.classList.add('selected');
+            
+            // Guardar respuesta del usuario
+            userAnswers[currentQuestionIndex] = optionIndex;
+            
+            // Mostrar retroalimentación
+            showFeedback();
+            
+            // Habilitar siguiente pregunta
+            nextBtn.disabled = false;
+        }
+
+        // Función para mostrar retroalimentación
+        function showFeedback() {
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            
+            // Marcar respuesta correcta e incorrecta
+            document.querySelectorAll('.option').forEach((option, index) => {
+                if (index === currentQuestion.correct) {
+                    option.classList.add('correct');
+                } else if (index === userAnswer && index !== currentQuestion.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Mostrar mensaje de retroalimentación
+            if (userAnswer === currentQuestion.correct) {
+                feedback.textContent = `¡Correcto! ${currentQuestion.explanation}`;
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                
+                // Incrementar puntuación si es la primera vez que responde correctamente
+                if (gameActive) {
+                    score += 5;
+                    currentScoreDisplay.textContent = score;
+                }
+            } else {
+                feedback.textContent = `Incorrecto. La respuesta correcta es: ${currentQuestion.options[currentQuestion.correct]}. ${currentQuestion.explanation}`;
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+            }
+            
+            feedback.style.display = 'block';
+            
+            // Detener el juego para esta pregunta
+            gameActive = false;
+            clearInterval(timer);
+        }
+
+        // Función para actualizar el temporizador
+        function updateTimer() {
+            timeLeft--;
+            updateTimerDisplay();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                
+                // Si no se ha respondido, marcar como no respondida
+                if (userAnswers[currentQuestionIndex] === null) {
+                    userAnswers[currentQuestionIndex] = -1; // -1 significa no respondida
+                    showFeedback();
+                    nextBtn.disabled = false;
+                }
+            }
+        }
+
+        // Función para actualizar la visualización del temporizador
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Cambiar color cuando quede poco tiempo
+            if (timeLeft <= 10) {
+                timerDisplay.style.color = '#e53935';
+            } else {
+                timerDisplay.style.color = '#283593';
+            }
+        }
+
+        // Función para ir a la siguiente pregunta
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < 20) {
+                gameActive = true;
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // Función para terminar el juego
+        function endGame() {
+            clearInterval(timer);
+            
+            // Cambiar a pantalla de resultados
+            gameScreen.classList.remove('active-screen');
+            resultsScreen.classList.add('active-screen');
+            
+            // Calcular resultados
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+            
+            for (let i = 0; i < 20; i++) {
+                if (userAnswers[i] === null || userAnswers[i] === -1) {
+                    unansweredCount++;
+                } else if (userAnswers[i] === selectedQuestions[i].correct) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+            }
+            
+            // Actualizar puntuación final (5 puntos por respuesta correcta)
+            const finalScore = correctCount * 5;
+            
+            // Actualizar elementos de resultados
+            finalScoreDisplay.textContent = finalScore;
+            totalAnsweredDisplay.textContent = `${20 - unansweredCount}/20`;
+            correctAnswersDisplay.textContent = correctCount;
+            incorrectAnswersDisplay.textContent = incorrectCount;
+            unansweredDisplay.textContent = unansweredCount;
+            
+            const percentage = ((correctCount / 20) * 100).toFixed(1);
+            percentageDisplay.textContent = `${percentage}%`;
+        }
+
+        // Función para reiniciar el juego
+        function restartGame() {
+            startScreen.classList.add('active-screen');
+            resultsScreen.classList.remove('active-screen');
+            gameScreen.classList.remove('active-screen');
+        }
+
+        // Inicializar MathJax para renderizar LaTeX
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+</body>
+</html>
